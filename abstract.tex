@@ -1,0 +1,12 @@
+\begin{abstract}
+The development of cyber-physical systems (CPS) is challenging due to the heterogeneity of the different subsystems. To assist in the development process, co-simulation can be used, where models of constituents of a CPS are coupled to jointly simulate the behavior of the full system. However, a trustworthy result of the co-simulation is only obtained if all of the simulation units are initialized correctly and in the correct order. In this work, we consider co-simulation where the simulation units are described as Functional Mock-up Units (FMU). The Functional Mock-up Interface specification specifies constraints to the initialization of variables in the scope of a single FMU. However, it does not consider the initialization of interconnected variables between instances of FMUs. Such interconnected variables place particular constraints on the initialization order of the FMUs.\\
+The approach taken to calculate a correct initialization order is based on predicates from the specification and the topological ordering of both internal connections and interconnected variables. Circular dependencies between FMU variables are dismissed. %This approach has been compared to other already existing approaches for FMI initialization. 
+The approach has been realized as a plugin for the open-source INTO-CPS Maestro 2 Co-simulation framework. It has been tested for various scenarios and compared to an existing \textit{Initializer} that has been validated through academic and industrial application. The approach has also been directly tested against an established co-simulation algorithm generator implemented in Prolog.
+
+\keywords{Co-simulation \and Initialization \and Topological ordering \and FMI}
+\end{abstract}
+
+%The correct initialization of a co-simulation depends not only on the value being assigned to each port but also the order in which the ports are initialized.
+
+
+
