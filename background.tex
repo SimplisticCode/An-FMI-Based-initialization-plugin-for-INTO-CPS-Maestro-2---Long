@@ -81,7 +81,7 @@ However a fixed point iteration technique is not guaranteed to convergence if th
 \todo{Christian should I add some pseudo code to explain?}
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
 A fixed point iteration is converging if a finite number of iterations will make the difference of the output-value of the same operation between two following iterations within a certain threshold.\\
-$Convergence = \exists n \in \setnat: \forall \p \in LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
+$Convergence = \exists n \in \setnat: \forall p \in LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
 $f$ is the operation performed on a loop-variable p of a given iteration n.
 \end{definition}
 
