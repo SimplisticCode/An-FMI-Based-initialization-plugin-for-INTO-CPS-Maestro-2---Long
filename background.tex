@@ -63,22 +63,38 @@ The interconnections of FMU variables can lead to circular dependencies between 
 
 \begin{definition}[Algebraic loops] 
 The set of interconnected variables in an algebraic loop is defined as: $LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
-An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in LoopVariables: Path(p_1, p_2) \land Path(p_1, p_2)\}$\todo{Look at this}\\
+An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$\todo{Look at this - can it be specified better?}\\
 Path is defined as the transitive closure of the set of relations: $\bigcup_{c \in \fmus} \set{\feedthrough{c}} \cup \coupling$\\
 The algebraic dependency will lead to the following difference between performing to following :
 \todo{Claudio check this definition and add a formalization of the challenge introduced}
 \end{definition}
-
 
 \begin{definition}[Challenge of Algebraic loops]\label{def:challenge}
 The algebraic dependency will lead to the following difference between performing to following :
 \todo{Claudio check the other definitions and add a formalization of the challenge introduced}
 \end{definition}
 
-As described by definition \ref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be be performed depends on the characteristics of the scenario. The operations should be performed until the system converge.
-However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop this should be treated as an incorrect co-simulation scenario and the simulation should be stopped. The criteria of a valid co-simulation scenario is is specified in definition \ref{def:convergence}.
+As described by definition \ref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be be performed depends on the characteristics of the scenario. The operations should be performed until the system converge. 
+An example of applying a fixed point iteration can be seen in Figure \ref{} where a bigger system contains an algebraic loop.
 
-\todo{Christian should I add some pseudo code to explain?}
+\begin{figure}[H]
+    \centering
+    \includegraphics{images/fmu_cycle.pdf}
+    \caption{Co-simulation scenario with cycle}
+    \label{fig:fmu_cycle}
+\end{figure}
+
+The initialization of the system requires application of fixed point iteration as defined by definition \ref{def:fixedpoint}.
+
+\begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
+Given an Initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ of a co-simulation $\tuple{\fmus, \coupling}$ where $LoopVariables \neq \emptyset$.\\
+Fixed point iteration should be used by 
+$\forall v \in LoopVariables $
+
+\end{definition}
+
+However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario wouldn't be trustworthy. The criteria of a valid co-simulation scenario is is specified in definition \ref{def:convergence}.
+
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
 A fixed point iteration is converging if a finite number of iterations will make the difference of the output-value of the same operation between two following iterations within a certain threshold.\\
 $Convergence = \exists n \in \setnat: \forall p \in LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
