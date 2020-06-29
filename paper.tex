@@ -64,97 +64,7 @@ Claudio Gomes \inst{1}}
 
 \input{introduction.tex}
 
-
-\section{Background}\label{sc:background}
-In this section, we provide a formalization of FMI co-simulation and a short background on INTO-CPS Maestro 2.
-
-\subsection{FMU definitions}
-To describe the formalization of FMUs, the vocabulary from Gomes et al\cite{gomes_lucio_vangheluwe_2019, Gomes2018} is adopted. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
-\begin{definition}[FMU]\label{def:fmu}
-  An FMU with identifier $c$ is represented by the tuple   
-  $$\tuple{\stateset{c}, \inputs{c}, \outputs{c}, \fset{c}, \fget{c}},$$
-  where:
-  \begin{inparadesc}
-    \item $\stateset{c}$ represents the state space;
-    \item $\inputs{c}$ and $\outputs{c}$ the set of input and output variables, respectively;
-    \item $\fset{c} : \stateset{c} \times \inputs{c} \times \values \to \stateset{c}$ and $\fget{c}: \stateset{c} \times \outputs{c} \to \values$ are functions to set the inputs and get the outputs, respectively (we abstract the set of values that each input/output variable can take as $\values$).
-  \end{inparadesc}
-\end{definition}
-
-\begin{definition}[Scenario]\label{def:cosim_scenario}
-  A scenario is a structure $\tuple{\fmus, \coupling}$ where each identifier $c \in \fmus$ is associated with an FMU, as defined in \ref{def:fmu}, and $\coupling(u)=y$ means that the output $y$ is connected to input $u$.
-  Let $\allinputs = \bigcup_{c \in \fmus} \inputs{c}$ and $\alloutputs = \bigcup_{c \in \fmus} \outputs{c}$, then $\coupling : \allinputs \to \alloutputs$.
-\end{definition}
-
-The following definitions correspond to the operations that are permitted in the initialization phase of a co-simulation.
-
-\begin{definition}[Step]\label{def:cosim_step}
-  Given a scenario $\tuple{\fmus, \coupling}$, a co-simulation step, or just step, is a finite ordered sequence of FMU function calls $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
-  $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$
-  and $i$ denoting the order of the function call.
-\end{definition}
-
-\begin{definition}[Initialization]\label{def:initialization}
-  Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ in the same way as a step, with $\initcall_i \in \allfunctioncalls$.
-\end{definition}
-
-\begin{definition}[Feed-through]\label{def:feedthrough}
-  The input $\inputvar{c} \in \inputs{c}$ feeds through to output $\outputvar{c} \in \outputs{c}$, that is, $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, when there exists $v_1, v_2 \in \values$ and $\state{c} \in \stateset{c}$, such that
-  $
-  \fget{c} (\fset{c}(\state{c}, \inputvar{c}, v_1), \outputvar{c}) \neq \fget{c} (\fset{c}(\state{c}, \inputvar{c}, v_2), \outputvar{c}).
-  $
-\end{definition}
-
-\begin{definition}[Output Computation]\label{def:getout}
-The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\outputvar{c}$ of $c \in \fmus$. Given a co-simulation state, it checks whether all inputs that feed-through to $\outputvar{c}$ are defined.
-\end{definition}
-
-\begin{definition}[Input Computation]\label{def:setin}
-The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input $\inputvar{c}$  of $c \in \fmus$. Given a co-simulation state, it checks whether all outputs connected to $\inputvar{c}$ are defined.
-\end{definition}
-
-\begin{definition}[Interconnected variable]
-An interconnected variable v of a co-simulation scenario $\tuple{\fmus, \coupling}$ is defined as $v \in \allinputs \cup \alloutputs$, then $\coupling : \allinputs \to \alloutputs$.
-The set all all interconnected variables is denoted: $V = \allinputs \cup \alloutputs$,
-\end{definition}
-
-The interconnections of FMU variables can lead to circular dependencies between these. The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these loops are introducing in the system. A co-simulation scenario containing an algebraic loop is shown in Figure \ref{fig:fmu_cycle}.
-
-\begin{figure}
-    \centering
-    \includegraphics{images/fmu_cycle.pdf}
-    \caption{Co-simulation scenario with cycle}
-    \label{fig:fmu_cycle}
-\end{figure}
-
-\begin{definition}[Algebraic loops] 
-The set of interconnected variables in an algebraic loop is defined as: $LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
-An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in LoopVariables: Path(p_1, p_2) \land Path(p_1, p_2)\}$\todo{Look at this}\\
-Path is defined as the transitive closure of the set of relations: $\bigcup_{c \in \fmus} \set{\feedthrough{c}} \cup \coupling$\\
-The algebraic dependency will lead to the following difference between performing to following :
-\todo{Claudio check this definition and add a formalization of the challenge introduced}
-\end{definition}
-
-
-\begin{definition}[Challenge of Algebraic loops]\label{def:challenge}
-The algebraic dependency will lead to the following difference between performing to following :
-\todo{Claudio check the other definitions and add a formalization of the challenge introduced}
-\end{definition}
-
-As described by definition \ref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be be performed depends on the characteristics of the scenario. The operations should be performed until the system converge.
-However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop this should be treated as an incorrect co-simulation scenario and the simulation should be stopped. The criteria of a valid co-simulation scenario is is specified in definition \ref{def:convergence}.
-
-\todo{Christian should I add some pseudo code to explain?}
-\begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
-A fixed point iteration is converging if a finite number of iterations will make the difference of the output-value of the same operation between two following iterations within a certain threshold.\\
-$Convergence = \exists n \in \setnat: \forall \p \in LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
-$f$ is the operation performed on a loop-variable p of a given iteration n.
-\end{definition}
-
-
-\subsection{INTO-CPS Maestro 2}\todo{We can have some more in this section - potentially half a page - Ask Casper if he can do it?}
-INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}\cite{thule_maestro2_2019} is an FMI-based co-simulation framework set to supersede Maestro\cite{Maestro}. The philosophy of the framework is to apply plugins to generate co-simulation specifications expressed in the domain specific language called Maestro Base Language (MaBL). Such specifications are then interpreted and executed resolving in the execution of a co-simulation.
-
+\input{background.tex}
 \section{Calculation of an Initialization Order}\label{sc:initilization}
 FMI defines certain information about the initialization order described through different states of a co-simulation. The initialization phase covers the two states (in chronological order):
 \begin{itemize}
@@ -233,31 +143,9 @@ A limitation of this optimization strategy is that it is not guaranteed to find 
 \subsection{Case study}
 Claudio writes this section 
 
+\input{realization.tex}
 
-
-\section{Realization of a Maestro 2 Plugin}\label{sc:implementation}
-This approach has been realized as a Maestro 2 plugin that generates the \textit{Initialization}-phase of a co-simulation specification expressed in MaBL. It calculates the specification based on a list of FMU-components of a co-simulation scenario, and a specific plugin-configuration to let the user supply initial values of FMU variables with $causality=parameter$. A correction initialization specification can be calculated by the plugin if the co-simulation scenario is adhering to definition \ref{def:convergence}.
-
-The plugin optimizes the initialization order by grouping operations that can be executed in \textit{parallel} to take advantage of FMI's ability to set or get multiple variables in bulk from the same FMU. The criteria for this optimization is defined in definition \ref{def:optimization}. 
-The developed plugin has been tested on numerous co-simulation examples from the INTO-CPS universe\cite{Maestro} and compared with the existing \textit{Initializer} of Maestro. The plugin has been tested in the whole Maestro 2 pipeline to practically verify that it can be used in a co-simulation where the generated initialization procedure is integrated as a part of a complete co-simulation to verify the initialization procedure's integration with a master algorithm.
-
-\subsection{Realization of the Topological Sorting}
-The topological sorting algorithm (Tarjan's Algorithm) was implemented in Scala. The motivation for choosing Scala is its relation to JVM and the connection to Slang and the Logika framework\cite{inbook}. The connection to Slang and Logika will be investigated in the future. The Logika framework will be used to formally verify the implementation plugin and be used to explore how the contract-based nature of Slang can be used to obtain more reliable results of co-simulations. The topological sorting returns a topological order of strongly connected components. This order is the order of initialization, where the elements containing more than a single element denotes an algebraic loop that requires a particular initialization strategy. 
-
-\subsection{Verification of the approach}
-The realized plugin and the developed approach have been verified in several different ways. Gomes et al. have in \cite{gomes_lucio_vangheluwe_2019} proved the correctness of using the topological order of a dependency graph of the interconnected variables to generate not only the initialization order but also the order for a co-simulation master-algorithm. The purpose of the publication by Gomes et al. is a little different from the one of this paper. Gomes et al. are interested in both generating an initialization and master-algorithm, meaning they also need to focus on the time of each FMU. They also define their graph based on FMU-operations ($Set, Get, doStep$) instead of interconnected variables, which is the approach described in this paper. This simplification is valid since this approach only cares about initialization and, therefore, does not need to care about the time of each FMU. This does that we can omit all the $doStep$ nodes and all edges connected to them from the graph by Gomes et al., this approach does, therefore, end up with a subgraph of the graph by Gomes et al. The proof from \cite{gomes_lucio_vangheluwe_2019} can therefore trivial be modified to the graph/approach presented in this paper.
-
-Gomes et al.'s main contribution is an implementation of the FMI specification in Prolog freely available to be used in other projects. The Prolog implementation was used in their research to verify their proposed approach for the generation of co-simulation algorithms. The realization encapsulates all the rules of a valid master-algorithm and an initialization algorithm. As a part of this work, an integration from this plugin has been realized to interact with the Prolog realization. This integration has been realized in order to verify the correctness of the calculated initialization order against an established and recognized method. The integration is querying the Prolog database with a co-simulation environment and an initialization order. The integration requires a transformation of the dependency graph (see definition \ref{def:initialization_graph}) used in the plugin to a graph of FMU operations. This transformation is based on the definitions \ref{def:getout} and \ref{def:setin}. The described verification integration is not utilized if the graph contains algebraic loops since the Prolog database does not support these scenarios.
-
-The Prolog code can generate an initialization order, but this functionality has not been used for several reasons. The main reason for not generating the initialization order using the Prolog code is based on performance considerations. The approach taken in this paper does also identifies the strongly connected components and performs a particular initialization strategy of these.
-
-\section{Related Work}
-Prior work \cite{Gomes2019, BromanCompositionCo-Simulation} has been looking into the generation of co-simulation algorithms for both master and initialization algorithms for FMI-based scenarios based on a dependency graph of the operations of a co-simulation step. Gomes and Broman do both present an approach where they use the topological sorting of a dependency graph to establish a correct order of operations in a co-simulation step.
-Gomes et al. \cite{Gomes2019} propose a strategy for the generation of co-simulation algorithms and define the criteria for a correct co-simulation step. Their work has many similarities with ours. However, their work does not look into the handling of algebraic loops and is not implemented as a real co-simulation framework. Furthermore, the approach taken in our work is only concerned with the initialization procedure of a co-simulation.
-
-The work by Broman et al. \cite{BromanCompositionCo-Simulation} proposes using the topological sorting of a dependency graph of the interconnected variables to detect algebraic loops and discover the partial order of port-operations. Nevertheless, they explicitly specify the requirement for cycle freedom in the dependency graph as a precondition for the generation of a deterministic co-simulation algorithm. It means they refuse all co-simulation scenarios containing algebraic loops. This is a significant difference to our approach that applies a fixed point iteration strategy to handle these scenarios. Also, the approach in this paper is more specialized in the sense that it is only considering the initialization of a co-simulation. 
-
-Amalio et al. \cite{Amalio2016CheckingCo-simulation} has been investigating how to avoid algebraic loops in FMU based co-simulation scenarios by statically checking the architectural design of a CPS. The publication's purpose is like ours to avoid invalid co-simulation scenarios. Nevertheless, they achieve this by excluding scenarios containing algebraic loops. Their method is like ours also implemented in the real tool INTO-SysML, and it is based on using different kinds of formal methods (Theorem Proving and Model-checking) and will be an inspiration for the future work of formally verifying the plugin. 
+\input{relatedwork.tex}
 
 \input{conclusion.tex}
 %
