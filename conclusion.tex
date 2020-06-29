@@ -1,9 +1,9 @@
 \section{Concluding remarks}\label{sc:summary}
-This work used a topological ordering based on the interconnected FMUs variable and internal FMU variable connections along with predicates from the FMI specification to calculate a correct initialization order for a co-simulation scenario. The calculated initialization order is optimized to group similar variables to perform fewest possible operations.
-This approach ensures absence of cycles between interconnected FMU variables by defining the criteria for valid co-simulation scenarios.
+This work uses a topological ordering of a dependency graph of the interconnected FMUs variable and internal FMU variable connections along with predicates from the FMI specification to calculate a correct initialization order for a co-simulation scenario. The calculated initialization order is optimized to group variables with similar characteristics to perform the fewest possible operations in the initialization procedure.
+This approach supports the initialization of a co-simulation scenario containing algebraic loops by utilization of fixed point iteration. The approach does also discard all co-simulation scenarios which are not adhering to the law of convergence \ref{def:convergence}.
 This approach can be combined with an arbitrary master algorithm to run the co-simulation. \\
-The approach was realized as a plugin for the open-source INTO-CPS Maestro 2 tool and verified against the existing \textit{Initializer} and the calculated initialization order was verified against an established co-simulation algorithm generator and verifier implemented in Prolog using an integration.\\
-Future work includes formally verifying the plugin, and its implementation of the algorithm used to calculate the topological ordering using the Logika framework.
-Future work will also look into generation of a verification strategy for the whole Maestro 2 framework to explore how different forms of verification jointly can extend the trust of the correctness of the result of a co-simulation. 
+The approach was realized as a plugin for the open-source INTO-CPS Maestro 2 tool and verified against the existing \textit{Initializer} and the calculated initialization order was verified against an established co-simulation Algorithm Generator and Verifier implemented in Prolog\cite{gomes_lucio_vangheluwe_2019}\\
+Future work includes formal verification of the plugin using the Logika framework\cite{inbook}.
+Future work will also look into the generation of a verification strategy for the whole Maestro 2 framework to explore how different forms of verification jointly can extend the trust of the correctness of the result of a co-simulation. 
 
-\paragraph*{\textbf{Acknowlegements.}}We would like to thank Stefan Hallerstede, Peter Gorm Larsen and Claudio Gomes for providing valuable input to this paper and the developed plugin.
+\paragraph*{\textbf{Acknowlegements.}}We would like to thank Stefan Hallerstede and Peter Gorm Larsen for providing valuable input to this paper and the developed plugin.
