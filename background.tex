@@ -62,17 +62,31 @@ A graph of the dependencies of a co-simulation scenario is established from the 
   \end{compactenum}
 \end{definition}
 
-The interconnections of FMU variables can lead to circular dependencies between these. The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these loops are introducing in the system. A co-simulation scenario containing an algebraic loop is shown in \cref{fig:fmu_cycle}.
+The interconnections of FMU variables can lead to circular dependencies between these as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
 
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics{images/fmu_cycle.pdf}
-    \caption{Co-simulation scenario with cycle}
+    \begin{minipage}{0.55\textwidth}
+        \centering
+    \includegraphics[width=1\textwidth]{images/fmu_cycle.pdf}
+    \end{minipage}\hfill
+    \begin{minipage}{0.35\textwidth}
+        \centering
+    \includegraphics[width=1\textwidth]{images/SCC.pdf}
+    \end{minipage}
+    \caption{An FMU co-simulation scenario and its Initialization Graph}
     \label{fig:fmu_cycle}
 \end{figure}
 
+
+
+
+
+
+The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing in the system. 
+
 \begin{definition}[Algebraic loops] 
-The set of interconnected variables in an algebraic loop is defined as a strongly connected component of the graph in \cref{def:initialization_graph}. \\
+An algebraic loop is defined as a strongly connected component of the graph in \cref{def:initialization_graph}. \\
 A strongly connected component: $SCC = v \in V: Path(v,v)$\\
 $\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
 An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$\todo{Look at this - can it be specified better?}\\
