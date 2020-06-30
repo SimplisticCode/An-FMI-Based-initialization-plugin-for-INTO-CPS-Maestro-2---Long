@@ -8,6 +8,11 @@ model QuarterCarScenario
                                                               4, 0;
                                                               5, 0
                                                               ]);
+initial equation
+  quarter_car.v = 0.0;
+  quarter_car.a = 0.0;
+  tire.v = 0.0;
+  tire.a = 0.0;
 equation
   connect(quarter_car.road_profile, road_profile_table.y);
 end QuarterCarScenario;
