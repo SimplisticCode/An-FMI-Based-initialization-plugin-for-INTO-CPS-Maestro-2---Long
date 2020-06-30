@@ -8,11 +8,13 @@ model Suspension
   Real tire_x, tire_v, F_rubber;
   input Real car_x, car_v;
   output Real F_suspension;
+  output Real a;
   Real F_total;
 equation
   der(tire_x) = tire_v;
   F_total = F_rubber + F_suspension - f_gravity;
-  tire_mass * der(tire_v) = F_total;
+  a = (1/tire_mass) * F_total;
+  der(tire_v) = a;
   F_rubber = - rubber_stiffness*tire_x - rubber_damping * tire_v;
   F_suspension = suspension_stiffness*(car_x - tire_x) + suspension_damping*(car_v - tire_v);
 end Suspension;
