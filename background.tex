@@ -1,9 +1,8 @@
-
 \section{Background}\label{sc:background}
-In this section, we provide a formalization of FMI co-simulation and a short background on INTO-CPS Maestro 2.
+In this section, we provide a formalization of FMI co-simulation and a brief background on INTO-CPS Maestro 2.
 
 \subsection{FMU definitions}
-To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019,Gomes2018}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
+To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019, Gomes2018}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation, making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
 \begin{definition}[FMU]\label{def:fmu}
   An FMU with identifier $c$ is represented by the tuple   
   $$\tuple{\stateset{c}, \inputs{c}, \outputs{c}, \fset{c}, \fget{c}},$$
@@ -62,7 +61,7 @@ A graph of the dependencies of a co-simulation scenario is established from the 
   \end{compactenum}
 \end{definition}
 
-The interconnections of FMU variables can lead to circular dependencies between these as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
+The interconnections of FMU variables can lead to circular dependencies between them, as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
 
 \begin{figure}[H]
     \centering
@@ -83,7 +82,7 @@ The interconnections of FMU variables can lead to circular dependencies between 
 
 
 
-The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing in the system. 
+The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing. 
 
 \begin{definition}[Algebraic loops] 
 An algebraic loop is defined as a strongly connected component of the graph in \cref{def:initialization_graph}. \\
@@ -110,7 +109,7 @@ An example of applying a fixed point iteration can be seen in \cref{def:fixedpoi
     \label{fig:fixedpont}
 \end{figure}
 
-The initialization of the system requires application of fixed point iteration as defined by \cref{def:fixedpoint}.
+The initialization of the system requires the application of fixed point iteration, as defined by \cref{def:fixedpoint}.
 \begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
 Given an Initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ of a co-simulation $\tuple{\fmus, \coupling}$ where $\LoopVariables \neq \emptyset$.\\
 Fixed point iteration should be used by 
@@ -118,14 +117,13 @@ $\forall v \in \LoopVariables $
 
 \end{definition}
 
-However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario wouldn't be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
+However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
 
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
-A fixed point iteration is converging if a finite number of iterations will make the difference of the output-value of the same operation between two following iterations within a certain threshold.\\
+A fixed point iteration converges if a finite number of iterations will make the difference of the output value of the same operation between two following iterations within a certain threshold.\\
 $Convergence = \exists n \in \setnat: \forall p \in \LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
 $f$ is the operation performed on a loop-variable p of a given iteration n.
 \end{definition}
 
-
 \subsection{INTO-CPS Maestro 2}\todo{We can have some more in this section - potentially half a page - Ask Casper if he can do it?}
-INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}\cite{thule_maestro2_2019} is an FMI-based co-simulation framework set to supersede Maestro\cite{Maestro}. The philosophy of the framework is to apply plugins to generate co-simulation specifications expressed in the domain specific language called Maestro Base Language (MaBL). Such specifications are then interpreted and executed resolving in the execution of a co-simulation.
+INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}\cite{thule_maestro2_2019} is an FMI-based co-simulation framework set to supersede Maestro\cite{Maestro}. The philosophy of the framework is to apply plugins to generate co-simulation specifications expressed in the domain specific language called Maestro Base Language (MaBL). Such specifications are then interpreted and executed, resolving in the execution of a co-simulation.
