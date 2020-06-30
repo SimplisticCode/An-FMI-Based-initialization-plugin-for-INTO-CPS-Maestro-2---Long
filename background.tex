@@ -3,7 +3,7 @@
 In this section, we provide a formalization of FMI co-simulation and a short background on INTO-CPS Maestro 2.
 
 \subsection{FMU definitions}
-To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019, Gomes2018}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
+To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019,Gomes2018}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
 \begin{definition}[FMU]\label{def:fmu}
   An FMU with identifier $c$ is represented by the tuple   
   $$\tuple{\stateset{c}, \inputs{c}, \outputs{c}, \fset{c}, \fget{c}},$$
