@@ -17,14 +17,6 @@ This section describes the approach to calculate the initialization order of the
 \subsubsection{Structure of the graph}
 The initialization algorithm starts by building a directed graph of the dependency between the interconnected variables of the FMUs. The graph is constructed based on the interconnected variables and internal connections (feed-through). Each interconnected variable in the system represents a node, and the edges are based on these connections. The edges of this graph represent precedence constraints based on the algebraic dependencies of the interconnected variables. Please see definition \ref{def:initialization_graph} for a formal definition of the graph.
 
-\begin{definition}[Initialization Graph]\label{def:initialization_graph}
-  Given a co-simulation scenario $\tuple{\fmus, \coupling}$, and a set of feed-through dependencies $\bigcup_{c \in \fmus} \set{\feedthrough{c}}$, we define the Initialization Graph where each node represents a port $\outputvar{c} \in \outputs{c}$ or $\inputvar{c} \in \inputs{c}$ of some fmu $c \in \fmus$. The edges are created according to the following rules:
-  \begin{compactenum}
-    \item For each $c \in \fmus$ and $\inputvar{c} \in \inputs{c}$, if $\coupling(\inputvar{c}) = \outputvar{d}$, add an edge $\outputvar{d} -> \inputvar{c}$.
-    \item For each $c \in \fmus$ and $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, add an edge $\inputvar{c} -> \outputvar{c}$.
-  \end{compactenum}
-\end{definition}
-
 As described earlier, not all co-simulation scenarios are valid, and these invalid scenarios need to be identified. This is done by monitoring convergence of all algebraic loops. A valid co-simulation scenario must convergence by definition given in definition \ref{def:convergence}.
 
 \subsubsection{Calculation of an initialization order}
@@ -42,7 +34,17 @@ Tarjan's algorithm is performing a topological sorting of the strongly connected
 \subsubsection{Handling of algebraic loops}
 As described earlier, it is essential to handle the algebraic loops by a particular initialization strategy since they otherwise would invalidate the result of the co-simulation. The strategy for managing algebraic loops is to identify and initialize them using a fixed point iteration until convergence. Because convergence is not guaranteed, it should be monitored, and if convergence can not be established within a finite number of iteration, the co-simulation should be rejected.
 
-The entire approach of the initialization of interconnected variables is formulated in pseudo-code in algorithm \ref{alg:initialization}.
+\subsection{Optimization of a Initialization Procedure}
+An initialization procedure can be optimized by using the fact that the FMI specification allows multiple \textit{set} or \textit{get} operations of the same FMU to be performed in bulk by grouping them together to a single operation over multiple variables with similar characteristic. The criteria of optimization can of an initialization procedure is formalized in definition \ref{def:optimization}
+\begin{definition}[Optimization of a Initialization procedure]\label{def:optimization}
+  Given an initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ with a finite ordered sequence of FMU function calls $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$ and $i$ denoting the order of the function call. It can be optimized if $\exists \functioncall_i, \functioncall_{i +1} \in \allfunctioncalls : \exists c \in \fmus :(\functioncall_i \in {\fset{c}} \land \functioncall_{i+1} \in {\fset{c}}) \lor (\functioncall_i \in {\fget{c}} \land \functioncall_{i+1} \in {\fget{c}})$
+\end{definition}
+Since an Initialization procedure is defined in the same way as other co-simulation steps, the optimization criteria described in definition \ref{def:optimization} is valid for an arbitrary co-simulation step. \\
+The correctness of this optimization can be established by the proof of using the Initialization Graph's topological ordering as the initialization order described by Gomes et al. \cite{Gomes2019}. This proof is still valid since this optimization does not change the structure of the Initialization Graph. \\
+A limitation of this optimization strategy is that it is not guaranteed to find all potentially valid optimizations of a co-simulation scenario. Considering it works only on a specific co-simulation step (a topological order of a graph), which is not necessarily unique for a given co-simulation scenario/graph. To perform all viable optimizations of a co-simulation step, a more advanced optimization strategy should be used, or this optimization strategy should be performed on the set of all valid co-simulation steps - yielding a potential very inefficient initialization algorithm.
+
+\subsection{The entire Initialization Strategy}
+The pseudo-code in \cref{alg:initialization} formulates the entire initialization strategy of the interconnected variables of a co-simulation scenario.
 \begin{figure}[htb]
   \centering
     \begin{algorithm}[H]
@@ -63,12 +65,3 @@ The entire approach of the initialization of interconnected variables is formula
     \end{algorithm}
 \end{figure}
 
-
-\subsection{Optimization of a Initialization Procedure}
-An initialization procedure can be optimized by using the fact that the FMI specification allows multiple \textit{set} or \textit{get} operations of the same FMU to be performed in bulk by grouping them together to a single operation over multiple variables with similar characteristic. The criteria of optimization can of an initialization procedure is formalized in definition \ref{def:optimization}
-\begin{definition}[Optimization of a Initialization procedure]\label{def:optimization}
-  Given an initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ with a finite ordered sequence of FMU function calls $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$ and $i$ denoting the order of the function call. It can be optimized if $\exists \functioncall_i, \functioncall_{i +1} \in \allfunctioncalls : \exists c \in \fmus :(\functioncall_i \in {\fset{c}} \land \functioncall_{i+1} \in {\fset{c}}) \lor (\functioncall_i \in {\fget{c}} \land \functioncall_{i+1} \in {\fget{c}})$
-\end{definition}
-Since an Initialization procedure is defined in the same way as other co-simulation steps, the optimization criteria described in definition \ref{def:optimization} is valid for an arbitrary co-simulation step. \\
-The correctness of this optimization can be established by the proof of using the Initialization Graph's topological ordering as the initialization order described by Gomes et al. \cite{Gomes2019}. This proof is still valid since this optimization does not change the structure of the Initialization Graph. \\
-A limitation of this optimization strategy is that it is not guaranteed to find all potentially valid optimizations of a co-simulation scenario. Considering it works only on a specific co-simulation step (a topological order of a graph), which is not necessarily unique for a given co-simulation scenario/graph. To perform all viable optimizations of a co-simulation step, a more advanced optimization strategy should be used, or this optimization strategy should be performed on the set of all valid co-simulation steps - yielding a potential very inefficient initialization algorithm.
