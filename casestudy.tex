@@ -4,4 +4,17 @@
 
 In this section, we give a simple example of a co-simulation whose correct initialization demands the solution to an algebraic loop.
 
-In the example case study, 
+In the example case study, the acceleration can be set to 0, at time 0.
+We show that \verb|tire_x| depends on itself as a consequence:
+\begin{verbatim}
+0 = a = (1/tire_mass) * F_total
+0 = F_total = F_rubber + F_suspension - f_gravity
+f_gravity - F_suspension = F_rubber
+F_rubber = - rubber_stiffness*tire_x - rubber_damping * tire_v
+tire_v = 0
+F_rubber = - rubber_stiffness*tire_x
+
+F_suspension = suspension_stiffness*(car_x - tire_x) + suspension_damping*(car_v - tire_v);
+
+tire_x = F(F_rubber) = G(F_suspension)= H(tire_x)
+\end{verbatim}
