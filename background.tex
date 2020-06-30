@@ -62,8 +62,8 @@ The interconnections of FMU variables can lead to circular dependencies between 
 \end{figure}
 
 \begin{definition}[Algebraic loops] 
-The set of interconnected variables in an algebraic loop is defined as: $LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
-An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$\todo{Look at this - can it be specified better?}\\
+The set of interconnected variables in an algebraic loop is defined as: $\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
+An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$\todo{Look at this - can it be specified better?}\\
 Path is defined as the transitive closure of the set of relations: $\bigcup_{c \in \fmus} \set{\feedthrough{c}} \cup \coupling$\\
 The algebraic dependency will lead to the following difference between performing to following :
 \todo{Claudio check this definition and add a formalization of the challenge introduced}
@@ -75,21 +75,20 @@ The algebraic dependency will lead to the following difference between performin
 \end{definition}
 
 As described by definition \ref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be be performed depends on the characteristics of the scenario. The operations should be performed until the system converge. 
-An example of applying a fixed point iteration can be seen in Figure \ref{} where a bigger system contains an algebraic loop.
+An example of applying a fixed point iteration can be seen in Figure \ref{def:fixedpoint} where a system containing an algebraic loop has to be initialized using fixed point iteration.
 
 \begin{figure}[H]
     \centering
-    \includegraphics{images/fmu_cycle.pdf}
-    \caption{Co-simulation scenario with cycle}
-    \label{fig:fmu_cycle}
+    \includegraphics[width=0.8\textwidth]{images/fixedpoint.pdf}
+    \caption{Fixed point iteration in a co-simulation scenario}
+    \label{fig:fixedpont}
 \end{figure}
 
 The initialization of the system requires application of fixed point iteration as defined by definition \ref{def:fixedpoint}.
-
 \begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
-Given an Initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ of a co-simulation $\tuple{\fmus, \coupling}$ where $LoopVariables \neq \emptyset$.\\
+Given an Initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ of a co-simulation $\tuple{\fmus, \coupling}$ where $\LoopVariables \neq \emptyset$.\\
 Fixed point iteration should be used by 
-$\forall v \in LoopVariables $
+$\forall v \in \LoopVariables $
 
 \end{definition}
 
@@ -97,7 +96,7 @@ However a fixed point iteration technique is not guaranteed to convergence if th
 
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
 A fixed point iteration is converging if a finite number of iterations will make the difference of the output-value of the same operation between two following iterations within a certain threshold.\\
-$Convergence = \exists n \in \setnat: \forall p \in LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
+$Convergence = \exists n \in \setnat: \forall p \in \LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
 $f$ is the operation performed on a loop-variable p of a given iteration n.
 \end{definition}
 
