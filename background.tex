@@ -74,8 +74,9 @@ The algebraic dependency will lead to the following difference between performin
 \todo{Claudio check the other definitions and add a formalization of the challenge introduced}
 \end{definition}
 
-As described by definition \ref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be be performed depends on the characteristics of the scenario. The operations should be performed until the system converge. 
+As described by definition \ref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step \claudio{Co-simulation step? Aren't only considering initialization here?}. The number of repetitions the operations should be performed depends on the characteristics of the scenario. The operations should be performed until the values assigned to each variable no longer change. 
 An example of applying a fixed point iteration can be seen in Figure \ref{def:fixedpoint} where a system containing an algebraic loop has to be initialized using fixed point iteration.
+\claudio{Perhaps later you can ditch \cref{fig:fixedpont} and refer to the case study section, to shorten the text.}
 
 \begin{figure}[H]
     \centering
@@ -92,7 +93,7 @@ $\forall v \in \LoopVariables $
 
 \end{definition}
 
-However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario wouldn't be trustworthy. The criteria of a valid co-simulation scenario is is specified in definition \ref{def:convergence}.
+However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario wouldn't be trustworthy. The criteria of a valid co-simulation scenario is specified in definition \ref{def:convergence}.
 
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
 A fixed point iteration is converging if a finite number of iterations will make the difference of the output-value of the same operation between two following iterations within a certain threshold.\\

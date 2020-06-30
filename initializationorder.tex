@@ -9,7 +9,7 @@ An example of a group from the FMI specification is the \textit{INI}-group that 
 
 In the \textit{Initialization Mode} state all variables of all FMUs should be defined.
 The variables with \textit{causality = parameter} of each FMU are set first, and the order of which they are set is again insignificant as they are independent.
-Afterwards the interconnected variables should be defined, but as stated by the definitions \ref{def:feedthrough}, \ref{def:getout} and \ref{def:setin} the operations \textit{get} and \textit{set} \textbf{require} a specific initialization order, and algebraic loops places even more constraints on the initialization order. This phase should should also support algebraic loops, this support includes utilization of fixed point iteration and detection of non-convergence of algebraic loops.
+Afterwards the interconnected variables should be defined, but as stated by the definitions \ref{def:feedthrough}, \ref{def:getout} and \ref{def:setin} the operations \textit{get} and \textit{set} \textbf{require} a specific initialization order, and algebraic loops places even more constraints on the initialization order. This phase should also support algebraic loops, this support includes utilization of fixed point iteration and detection of non-convergence of algebraic loops.
 
 \subsection{Method to calculate the initialization order}
 This section describes the approach to calculate the initialization order of the interconnected FMU variables are based on the the method proposed in Gomes et al. \cite{Gomes2019b, BromanCompositionCo-Simulation}, but the approach used here has been extended with the ability to handle algebraic loops. 
@@ -25,7 +25,7 @@ The initialization algorithm starts by building a directed graph of the dependen
   \end{compactenum}
 \end{definition}
 
-As described earlier, not all co-simulation scenarios are valid, and these invalid scenarios need to be identified. This is done by monitoring convergence of all algebraic loops. A valid co-simulation scenario must convergence by definition given in definition \ref{def:convergence}.
+As described earlier, not all co-simulation scenarios are valid, and these invalid scenarios need to be identified. This is done by monitoring convergence of the fixed point iteration when solving the algebraic loops. A valid co-simulation scenario must convergence by definition \ref{def:convergence}.
 
 \subsubsection{Calculation of an initialization order}
 The topological ordering of the graph defined in definition \ref{def:initialization_graph} is used as the initialization order of the interconnected FMU variables. The elements of the topological order are the strongly connected components of the graphs. The strongly connected components are potentially algebraic loops of the system. The algebraic loops are easily identified as the strongly connected components containing more than a single element. The single element members of the topological order are standard interconnected FMU variables, whose port operation should only be performed once during the initialization procedure. \\
