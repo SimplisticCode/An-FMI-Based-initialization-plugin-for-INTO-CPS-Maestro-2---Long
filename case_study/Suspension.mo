@@ -10,9 +10,7 @@ model Suspension
   Modelica.Mechanics.Translational.Components.SpringDamper rubber(c=rubber_stiffness, d=rubber_damping);
   Modelica.Mechanics.Translational.Sources.Position road(exact=false);
   Modelica.Blocks.Interfaces.RealInput road_profile;
-  //Modelica.Mechanics.Translational.Interfaces.Flange_b flange_b;
-  Modelica.Mechanics.Translational.Sensors.ForceSensor suspension_force;
-  Modelica.Mechanics.Translational.Sources.Position car_position;
+  Modelica.Mechanics.Translational.Interfaces.Flange_b flange_b;
 equation
   // Connect input road block (a real signal) with road position (a displacement)
   connect(road_profile, road.s_ref);
@@ -23,6 +21,5 @@ equation
   // Connect tire mass to suspension and gravity
   connect(tire.flange_b, suspension.flange_a);
   connect(tire.flange_b, gravity_tire.flange);
-  connect(suspension.flange_b, suspension_force.flange_a);
-  connect(suspension.flange_b, car_position.flange);
+  connect(suspension.flange_b, flange_b);
 end Suspension;
