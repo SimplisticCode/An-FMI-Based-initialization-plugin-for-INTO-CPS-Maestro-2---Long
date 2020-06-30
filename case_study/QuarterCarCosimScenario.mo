@@ -3,11 +3,14 @@ model QuarterCarCosimScenario
   Suspension s();
   QuarterCarMass cm();
 initial equation
-  cm.quarter_car.v = 0.0;
-  cm.quarter_car.a = 0.0;
-  s.tire.v = 0.0;
-  s.tire.a = 0.0;
+  //cm.car_x = 0.0;
+  cm.car_v = 0.0;
+  //s.tire_x = 0.0;
+  s.tire_v = 0.0;
+  cm.F_total = 0.0;
+  s.F_total = 0.0;
 equation
-  connect(s.flange_b, cm.flange_a);
-  s.road_profile = 0.0;
+  s.car_x = cm.car_x;
+  s.car_v = cm.car_v;
+  cm.F_suspension = s.F_suspension;  
 end QuarterCarCosimScenario;
