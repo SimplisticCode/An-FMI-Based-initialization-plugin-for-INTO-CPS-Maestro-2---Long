@@ -20,6 +20,7 @@ To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_
 \end{definition}
 
 The following definitions correspond to the operations that are permitted in the initialization phase of a co-simulation.
+
 \begin{definition}[Output Computation]\label{def:getout}
 The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\outputvar{c}$ of $c \in \fmus$. Given a co-simulation state, it checks whether all inputs that feed-through to $\outputvar{c}$ are defined.
 \end{definition}
@@ -28,11 +29,14 @@ The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\
 The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input $\inputvar{c}$  of $c \in \fmus$. Given a co-simulation state, it checks whether all outputs connected to $\inputvar{c}$ are defined.
 \end{definition}
 
+\begin{definition}[Fixed Point Computation]\label{def:fixedpoint}
+The $\fixedpoint{l}$ represents an order sequence of the setting or getting of all input and output variables of a given non-trivial SCC $l$.
+\end{definition}
+
 \begin{definition}[Initialization]\label{def:initialization}
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
   $\functioncall_i \in \initcall_{} = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
   and $i$ denoting the order of the function call.
-  Fixed point is defined in \cref{def:fixedpoint} and
   loops in defined as the set of all non trivial SCC see \cref{def:loop}.
 \end{definition}
 
@@ -50,7 +54,7 @@ An interconnected variable v of a co-simulation scenario $\tuple{\fmus, \couplin
 The set all all interconnected variables is denoted: $V = \allinputs \cup \alloutputs$,
 \end{definition}
 
-A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph. The graph construction is similar to the one in \cite{Gomes2019c} except that the later focuses on the co-simulation step, while this work focus on the initialization phase.
+A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph. The graph construction is similar to the one in \cite{Gomes2019c}, except the later focuses on a general co-simulation step, while this work focus on the initialization phase.
 
 \begin{definition}[Initialization Graph]\label{def:initialization_graph}
   Given a co-simulation scenario $\tuple{\fmus, \coupling}$, and a set of feed-through dependencies $\bigcup_{c \in \fmus} \set{\feedthrough{c}}$, we define the Initialization Graph where each node represents a port $\outputvar{c} \in \outputs{c}$ or $\inputvar{c} \in \inputs{c}$ of some fmu $c \in \fmus$. The edges are created according to the following rules:
@@ -60,37 +64,30 @@ A graph of the dependencies of a co-simulation scenario is established from the 
   \end{compactenum}
 \end{definition}
 
-The interconnections of FMU variables can lead to circular dependencies between the variables. An example of this behavior is the car suspension system that is presented in \cref{sec:case_study}. \cref{fig:fmu_cycle} shows the co-simulation scenario of the and the Initialization Graph of the system. The Initialization Graph in \cref{fig:fmu_cycle} is annotated with the strongly connected components.
+The interconnections of FMU variables can lead to circular dependencies between the variables. An example of this behavior is the car suspension system that is presented in \cref{sec:case_study}. \cref{fig:fmu_cycle} shows the co-simulation scenario of the and the Initialization Graph of the system. The Initialization Graph in \cref{fig:fmu_cycle} is annotated with the strongly connected components of the graph.
 
 \begin{figure}
     \centering
-    \begin{minipage}{0.55\textwidth}
-        \centering
-    \includegraphics[width=1\textwidth]{images/fmu_cycle.pdf}
-    \end{minipage}\hfill
-    \begin{minipage}{0.35\textwidth}
-        \centering
-    \includegraphics[width=1\textwidth]{images/SCC.pdf}
-    \end{minipage}
-    \caption{An FMU co-simulation scenario and its Initialization Graph}
+    \includegraphics[width=1\textwidth]{images/quarter_car_SCC.pdf}
+    \caption{An FMU co-simulation scenario of the Quarter car and its Initialization Graph denoted with SCCs}
     \label{fig:fmu_cycle}
 \end{figure}
 
 
-The following definitions formalizes the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing.
+The following definitions formalize the concept of an algebraic loop in a co-simulation scenario and define the problem these algebraic loops are introducing.
 The definition of strongly connected components is adapted from the semantics of Causal Block Diagrams (see \cite{Gomes2020} for an overview).
 
 \begin{definition}[Algebraic loops] \label{def:loop}
-An algebraic loop is defined as a non-trivial strongly connected component of the graph in \cref{def:initialization_graph}.
+An algebraic loop is defined as a non-trivial, strongly connected component of the graph in \cref{def:initialization_graph}.
 Formally, a strong connected component satisfies $\set{a,b \in SCC: \mathit{Path}(a,b)}$, where $\mathit{Path}(a,b)$ is true when there's a path (including an empty path) between nodes $a$ and $b$ ($\mathit{Path}(a,a)$ is always true).
-An $SCC$ is non trivial when it has more than one node.
+An $SCC$ is non-trivial when it has more than one node.
 \end{definition}
 
-Since the edges of the graph represent dependencies between variables, the value of every variable in a non trivial strong component depends on itself.
-Let $X$ denote a vector of one or more variables whose value depends on itself. Then the non trivial strong component forms an equation with the form $F(X, U) = X$, where $F$ denotes the relations between the variables in the loop, and $U$ denotes the variables whose values are calculated elsewhere.
+Since the edges of the graph represent dependencies between variables, the value of every variable in a non-trivial strong component depends on itself.
+Let $X$ denote a vector of one or more variables whose value depends on itself. The non-trivial strong component forms an equation with the form $F(X, U) = X$, where $F$ denotes the relations between the variables in the loop and $U$ denotes the variables whose values are calculated elsewhere.
 This means that algebraic loops need to be handled using fixed point iterations\cite{Gomes2018}. 
 
-An example of a co-simulation scenario where fixed point iteration ia needed can be seen in \cref{fig:fmu_cycle} where the Initialization Graph of the quarter car system from \cref{sec:case_study} is shown.
+An example of a co-simulation scenario where fixed point iteration is needed can be seen in \cref{fig:fmu_cycle} where the Initialization Graph of the quarter car system from \cref{sec:case_study} is shown.
 
 % The initialization of the system requires the application of fixed point iteration, as defined \cref{def:fixedpoint}.
 %\begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
@@ -102,7 +99,7 @@ An example of a co-simulation scenario where fixed point iteration ia needed can
 
 %\claudio{The above defintions is strange. If there's an algebraic loop, you cannot have an initialization procedure. At least not the way it is currently defined. Also I feel that you don't really need to define the fixed point iteration. We just need to reformulate the initialization procedure so that it matches what your plugin should output.}
 
-A fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
+A fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In the case of a non-converging algebraic loop, the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario are specified in \cref{def:convergence}.
 
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
 A fixed point iteration converges if a finite number of iterations will make the difference of the output value of the same operation between two following iterations within a certain threshold $\epsilon$.\\
