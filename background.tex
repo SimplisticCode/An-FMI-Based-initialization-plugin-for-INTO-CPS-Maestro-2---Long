@@ -25,7 +25,6 @@ The following definitions correspond to the operations that are permitted in the
   Given a scenario $\tuple{\fmus, \coupling}$, a co-simulation step, or just step, is a finite ordered sequence of FMU function calls $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
   $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
   and $i$ denoting the order of the function call.
-  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:}.
 \end{definition}
 \claudio{The above definition should not be called Step, because it can be confused with co-simulation step. Maybe call it Operations? Note that in the sentence before the definition, you say that these defs only refer to the initialization.}
 
