@@ -10,6 +10,10 @@ model Suspension
   output Real F_suspension;
   output Real a;
   Real F_total;
+initial equation
+  //tire_x = 0.0; // Uncoment for invalid initial state.
+  a = 0.0; // Comment for invalid initial state
+  tire_v = 0.0;
 equation
   der(tire_x) = tire_v;
   F_total = F_rubber + F_suspension - f_gravity;
