@@ -9,9 +9,10 @@ Some groups consists of variables and parameters whose value does not depend on 
 The operations are on the variables of each FMU are grouped to perform the fewest possible operations in the initialization. 
 
 In the \textit{Initialization Mode} state, all variables of all FMUs should be defined.
-The parameters of each FMU are set first, and the order they are set is again insignificant as they are independent.
-Afterwards the interconnected variables should be defined, but as stated by the \cref{def:feedthrough,def:getout,def:setin} the operations \textit{get} and \textit{set} \textbf{require} a specific initialization order, and algebraic loops places even more constraints on the initialization order. All these constraints must be satisfied by the initialization procedure of the interconnected variables.
-\claudio{I feel like the previous two sentences are a bit contradictory, and are probably constructed like so because you did not deal with algebraic loops upfront. When algebraic loops are not there, there must be an order. But when algebraic loops are there, it's not that there's more constraints... it's just that one has to isolate the strong components from the rest. The result is then an order between strongly connected components, but no order within each component}
+The parameters of each FMU are set first, and the order in which they are set is again insignificant as they are independent.
+Afterwards the interconnected variables should be defined, but as stated by the \cref{def:feedthrough,def:getout,def:setin} the operations \textit{get} and \textit{set} \textbf{require} a specific initialization order, and algebraic loops place even more requirements on the initialization strategy. Since each non simple strongly connected components need to be isolated from the other parts on the system in able to apply the fixed point iteration technique. 
+
+%\%claudio{I feel like the previous two sentences are a bit contradictory, and are probably constructed like so because you did not deal with algebraic loops upfront. When algebraic loops are not there, there must be an order. But when algebraic loops are there, it's not that there's more constraints... it's just that one has to isolate the strong components from the rest. The result is then an order between strongly connected components, but no order within each component}
 
 \subsection{Method to calculate the initialization order}
 This section describes the approach taken to calculate the initialization order of the interconnected FMU variables. The approach is based on the strategy proposed in Gomes et al. \cite{Gomes2019b, BromanCompositionCo-Simulation}, but the approach in this work is extended with the ability to handle the initialization of algebraic loops. 

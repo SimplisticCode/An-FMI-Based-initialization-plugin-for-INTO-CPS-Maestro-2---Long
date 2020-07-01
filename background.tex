@@ -59,10 +59,7 @@ A graph of the dependencies of a co-simulation scenario is established from the 
   \end{compactenum}
 \end{definition}
 
-The interconnections of FMU variables can lead to circular dependencies between the variables. An example of this is presented in the example in \cref{sec:case_study}.
-
-as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
-\claudio{Simon, can you update the above paragraph to use the co-simulation scenario presernted in the case study section? You can then reuse the space and the reader will already get some familiarity with the case study. Maybe you can even ditch the \cref{fig:fmu_cycle}.}
+The interconnections of FMU variables can lead to circular dependencies between the variables. An example of this behavior is the car suspension system that is presented in \cref{sec:case_study}. \cref{fig:fmu_cycle} shows the co-simulation scenario of the and the Initialization Graph of the system. The Initialization Graph in \cref{fig:fmu_cycle} is annotated with the strongly connected components.
 
 \begin{figure}
     \centering
