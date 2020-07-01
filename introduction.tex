@@ -11,11 +11,9 @@ Other approaches for the generation of co-simulation algorithms have avoided co-
 \textit{Contribution:} This paper describes an approach for calculating the initialization order of an FMI-based co-simulation in linear time of the number of interconnected variables, even when algebraic loops are present.
 % The approach complies with the semantics of FMI and support the initialization of algebraic loops between interconnected FMU variables and identifies divergence in a co-simulation scenario. 
 The approach does not put any constraints on choosing a master algorithm that should be used to carry out the simulation. 
-This means that the approach is suitable to combine with well-established master algorithms like Gauss-Seidel and Jacobian \cite{Palensky2017}. 
-\claudio{Maybe move the above sentence to the conclusion as it's kind of redundant with the previous sentence, and seems to a conclusion of this approach.}
 The approach is realized as a plugin to the co-simulation framework called INTO-CPS Maestro 2 (Maestro 2), introduced in \cite{Thule2019b}.
 The realized plugin has been tested for various co-simulation scenarios and compared to an existing approach that has been validated through academic and industrial applications. 
-Furthermore, the calculated initialization order is systematically verified by the semantics of co-simulation introduced in \cite{gomes_lucio_vangheluwe_2019,Gomes2019c}. \\
+Furthermore, the calculated initialization order is systematically verified by the semantics of co-simulation introduced in \cite{gomes_lucio_vangheluwe_2019,Gomes2019c}. 
 \claudio{Simon, can you please remove the double slashes (like the one right before this comment) from the end of sentences and paragraphs? It's bad practice to force Latex to make new lines. Also, you don't want to worry about that... latex usually does a good job at laying out the text for you.}
 
 \textit{Structure:} The paper is structured as follows: Section \ref{sc:background} gives a brief background of the formalization of FMUs and Maestro 2. Section \ref{sc:initilization} describes the approach taken to calculate the initialization order. It is followed by section \ref{sc:implementation}, where the realization of the approach is presented. Finally, section \ref{sc:summary} provides concluding remarks and describes future work.
