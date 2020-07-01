@@ -20,28 +20,6 @@ To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_
 \end{definition}
 
 The following definitions correspond to the operations that are permitted in the initialization phase of a co-simulation.
-
-\begin{definition}[Step]\label{def:cosim_step}
-  Given a scenario $\tuple{\fmus, \coupling}$, a co-simulation step, or just step, is a finite ordered sequence of FMU function calls $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
-  $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
-  and $i$ denoting the order of the function call.
-  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:}.
-\end{definition}
-\claudio{The above definition should not be called Step, because it can be confused with co-simulation step. Maybe call it Operations? Note that in the sentence before the definition, you say that these defs only refer to the initialization.}
-
-\begin{definition}[Initialization]\label{def:initialization}
-  Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ in the same way as a step, with $\initcall_i \in \allfunctioncalls$.
-\end{definition}
-
-\claudio{I'm now confused by the above definition, as it's trying to use the step definition. But the step definition is the same as the INitialization definition....}
-
-\begin{definition}[Feed-through]\label{def:feedthrough}
-  The input $\inputvar{c} \in \inputs{c}$ feeds through to output $\outputvar{c} \in \outputs{c}$, that is, $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, when there exists $v_1, v_2 \in \values$ and $\state{c} \in \stateset{c}$, such that
-  $
-  \fget{c} (\fset{c}(\state{c}, \inputvar{c}, v_1), \outputvar{c}) \neq \fget{c} (\fset{c}(\state{c}, \inputvar{c}, v_2), \outputvar{c}).
-  $
-\end{definition}
-
 \begin{definition}[Output Computation]\label{def:getout}
 The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\outputvar{c}$ of $c \in \fmus$. Given a co-simulation state, it checks whether all inputs that feed-through to $\outputvar{c}$ are defined.
 \end{definition}
@@ -50,15 +28,28 @@ The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\
 The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input $\inputvar{c}$  of $c \in \fmus$. Given a co-simulation state, it checks whether all outputs connected to $\inputvar{c}$ are defined.
 \end{definition}
 
-\claudio{I think the above two definitions should come before the initialization definition, as the later uses the former (I prefer a bottom up approach.). You can also, at the beginning of sectioin 2.1, explain that you're going to ultimately define what the initialization procedure and algebraic loops are, but to do that, you have to define a couple of small things first. This allows the reader to understand why you define these small operations before getting to the bigger definitions.}
+\begin{definition}[Initialization]\label{def:initialization}
+  Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
+  $\functioncall_i \in \initcall_{} = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
+  and $i$ denoting the order of the function call.
+  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:}.
+\end{definition}
+
+\begin{definition}[Feed-through]\label{def:feedthrough}
+  The input $\inputvar{c} \in \inputs{c}$ feeds through to output $\outputvar{c} \in \outputs{c}$, that is, $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, when there exists $v_1, v_2 \in \values$ and $\state{c} \in \stateset{c}$, such that
+  $
+  \fget{c} (\fset{c}(\state{c}, \inputvar{c}, v_1), \outputvar{c}) \neq \fget{c} (\fset{c}(\state{c}, \inputvar{c}, v_2), \outputvar{c}).
+  $
+\end{definition}
+
+\claudio{I think the above two definitions should come before the initialization definition, as the later uses the former (I prefer a bottom up approach.). You can also, at the beginning of section 2.1, explain that you're going to ultimately define what the initialization procedure and algebraic loops are, but to do that, you have to define a couple of small things first. This allows the reader to understand why you define these small operations before getting to the bigger definitions.}
 
 \begin{definition}[Interconnected variable]
 An interconnected variable v of a co-simulation scenario $\tuple{\fmus, \coupling}$ is defined as $v \in \allinputs \cup \alloutputs$, then $\coupling : \allinputs \to \alloutputs$.
 The set all all interconnected variables is denoted: $V = \allinputs \cup \alloutputs$,
 \end{definition}
 
-A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph.
-\claudio{The graph construction is similar to the one in \cite{Gomes2019c} except that the later focuses on the co-simulation step, while we here focus on the initialization phase.}
+A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph. The graph construction is similar to the one in \cite{Gomes2019c} except that the later focuses on the co-simulation step, while this work focus on the initialization phase.
 
 \begin{definition}[Initialization Graph]\label{def:initialization_graph}
   Given a co-simulation scenario $\tuple{\fmus, \coupling}$, and a set of feed-through dependencies $\bigcup_{c \in \fmus} \set{\feedthrough{c}}$, we define the Initialization Graph where each node represents a port $\outputvar{c} \in \outputs{c}$ or $\inputvar{c} \in \inputs{c}$ of some fmu $c \in \fmus$. The edges are created according to the following rules:
@@ -86,23 +77,17 @@ The interconnections of FMU variables can lead to circular dependencies between 
 \end{figure}
 
 
-The following definitions will formalize \claudio{Simon, please avoid the future tense in the text. This is because the present tense is used to describe an action that is eternal... and the text in the paper is eternal.} the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing.
+The following definitions formalizes the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing.
 The definition of strongly connected components is adapted from the semantics of Causal Block Diagrams (see \cite{Gomes2020} for an overview).
 
 \begin{definition}[Algebraic loops] 
 An algebraic loop is defined as a non-trivial strongly connected component of the graph in \cref{def:initialization_graph}.
-\claudio{Using mathit tells latex that the text is a single block and avoids formatting problems. See \url{https://tex.stackexchange.com/questions/482743/typesetting-multi-letter-variable-names-in-math-mode}.}
 Formally, a strong connected component satisfies $\set{a,b \in SCC: \mathit{Path}(a,b)}$, where $\mathit{Path}(a,b)$ is true when there's a path (including an empty path) between nodes $a$ and $b$ ($\mathit{Path}(a,a)$ is always true).
 An $SCC$ is non trivial when it has more than one node.
 %$\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
 %An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$/
 %Path is defined as the transitive closure of the edges of the graph denoted by \cref{def:initialization_graph}.
 \end{definition}
-
-%\begin{definition}[Challenge of Algebraic loops]\label{def:challenge}
-%The algebraic dependency will lead to the following difference between performing to following :
-%\todo{Claudio check the other definitions and add a formalization of the challenge introduced}
-%\end{definition}
 
 Since the edges of the graph represent dependencies between variables, the value of every variable in a non trivial strong component depends on itself.
 Let $X$ denote a vector of one or more variables whose value depends on itself. Then the non trivial strong component forms an equation with the form $F(X, U) = X$, where $F$ denotes the relations between the variables in the loop, and $U$ denotes the variables whose values are calculated elsewhere.
@@ -112,7 +97,7 @@ An example of applying a fixed point iteration can be seen in \cref{def:fixedpoi
 \claudio{Perhaps later you can ditch \cref{fig:fixedpont} and refer to the case study section, to shorten the text.}
 \claudio{You should avoid forcing Latex to position pictures in a particular place. It's bad practice because it causes too much blank space. Also it's a lot of work for you to care about the specific placement of figures.}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{images/fixedpoint.pdf}
     \caption{Fixed point iteration in a co-simulation scenario}
