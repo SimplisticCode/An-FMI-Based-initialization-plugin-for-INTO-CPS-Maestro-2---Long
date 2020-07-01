@@ -32,7 +32,7 @@ The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
   $\functioncall_i \in \initcall_{} = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
   and $i$ denoting the order of the function call.
-  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:}.
+  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:loop}.
 \end{definition}
 
 \begin{definition}[Feed-through]\label{def:feedthrough}
@@ -42,7 +42,7 @@ The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input
   $
 \end{definition}
 
-\claudio{I think the above two definitions should come before the initialization definition, as the later uses the former (I prefer a bottom up approach.). You can also, at the beginning of section 2.1, explain that you're going to ultimately define what the initialization procedure and algebraic loops are, but to do that, you have to define a couple of small things first. This allows the reader to understand why you define these small operations before getting to the bigger definitions.}
+%\claudio{I think the above two definitions should come before the initialization definition, as the later uses the former (I prefer a bottom up approach.). You can also, at the beginning of section 2.1, explain that you're going to ultimately define what the initialization procedure and algebraic loops are, but to do that, you have to define a couple of small things first. This allows the reader to understand why you define these small operations before getting to the bigger definitions.}
 
 \begin{definition}[Interconnected variable]
 An interconnected variable v of a co-simulation scenario $\tuple{\fmus, \coupling}$ is defined as $v \in \allinputs \cup \alloutputs$, then $\coupling : \allinputs \to \alloutputs$.
@@ -59,7 +59,9 @@ A graph of the dependencies of a co-simulation scenario is established from the 
   \end{compactenum}
 \end{definition}
 
-The interconnections of FMU variables can lead to circular dependencies between them, as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
+The interconnections of FMU variables can lead to circular dependencies between the variables. An example of this is presented in the example in \cref{sec:case_study}.
+
+as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
 \claudio{Simon, can you update the above paragraph to use the co-simulation scenario presernted in the case study section? You can then reuse the space and the reader will already get some familiarity with the case study. Maybe you can even ditch the \cref{fig:fmu_cycle}.}
 
 \begin{figure}
@@ -80,13 +82,10 @@ The interconnections of FMU variables can lead to circular dependencies between 
 The following definitions formalizes the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing.
 The definition of strongly connected components is adapted from the semantics of Causal Block Diagrams (see \cite{Gomes2020} for an overview).
 
-\begin{definition}[Algebraic loops] 
+\begin{definition}[Algebraic loops] \label{def:loop}
 An algebraic loop is defined as a non-trivial strongly connected component of the graph in \cref{def:initialization_graph}.
 Formally, a strong connected component satisfies $\set{a,b \in SCC: \mathit{Path}(a,b)}$, where $\mathit{Path}(a,b)$ is true when there's a path (including an empty path) between nodes $a$ and $b$ ($\mathit{Path}(a,a)$ is always true).
 An $SCC$ is non trivial when it has more than one node.
-%$\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
-%An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$/
-%Path is defined as the transitive closure of the edges of the graph denoted by \cref{def:initialization_graph}.
 \end{definition}
 
 Since the edges of the graph represent dependencies between variables, the value of every variable in a non trivial strong component depends on itself.
@@ -105,12 +104,12 @@ An example of applying a fixed point iteration can be seen in \cref{def:fixedpoi
 \end{figure}
 
 % The initialization of the system requires the application of fixed point iteration, as defined \cref{def:fixedpoint}.
-\begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
-A fixed point iteration of given loop $l$ consist of the order sequence of functions calls:
-$\forall v \in l: \exists op \in \fixedpoint{l} : op = \fget{}(\dontcare, v) \lor op = \fset{}(\dontcare, v, \dontcare)$.
-Performing a iteration on a co-simulation state leads to a new state to $\fixedpoint{l}(\state{n}) = \state{n + 1}$
-The fixed point iteration is performed in order to find a convergent initialization state as defined in \cref{def:convergence}.
-\end{definition}
+%\begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
+%A fixed point iteration of given loop $l$ consist of the order sequence of functions calls:
+%$\forall v \in l: \exists op \in \fixedpoint{l} : op = \fget{}(\dontcare, v) \lor op = \fset{}(\dontcare, v, \dontcare)$.
+%Performing a iteration on a co-simulation state leads to a new state to $\fixedpoint{l}(\state{n}) = \state{n + 1}$
+%The fixed point iteration is performed in order to find a convergent initialization state as defined in \cref{def:convergence}.
+%\end{definition}
 
 \claudio{The above defintions is strange. If there's an algebraic loop, you cannot have an initialization procedure. At least not the way it is currently defined. Also I feel that you don't really need to define the fixed point iteration. We just need to reformulate the initialization procedure so that it matches what your plugin should output.}
 

@@ -1,6 +1,5 @@
 \section{Concluding remarks}\label{sc:summary}
-This work uses a topological ordering of a dependency graph of the interconnected FMUs variable and internal FMU variable connections along with predicates from the FMI specification to calculate a correct initialization order for a co-simulation scenario. 
-\claudio{You forgot to mention algebraic loops.}
+This work uses a topological ordering of a dependency graph of the interconnected FMUs variable and internal FMU variable connections along with predicates from the FMI specification to calculate a correct initialization order for a co-simulation scenario potentially containing algebraic loops.
 The plugin optimizes the calculated initialization order by grouping variables with similar characteristics to perform the fewest possible operations in the initialization procedure.
 This approach supports the initialization of a co-simulation scenario containing algebraic loops by using fixed point iteration. 
 %The approach discards all co-simulation scenarios, not adhering to the law of convergence defined in \cref{def:convergence}.
