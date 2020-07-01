@@ -120,10 +120,10 @@ An example of applying a fixed point iteration can be seen in \cref{def:fixedpoi
 
 % The initialization of the system requires the application of fixed point iteration, as defined \cref{def:fixedpoint}.
 \begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
-Given an Initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ of a co-simulation $\tuple{\fmus, \coupling}$ where $\LoopVariables \neq \emptyset$.\\
-Fixed point iteration should be used by 
-$\forall v \in \LoopVariables $
-
+A fixed point iteration of given loop $l$ consist of the order sequence of functions calls:
+$\forall v \in l: \exists op \in \fixedpoint{l} : op = \fget{}(\dontcare, v) \lor op = \fset{}(\dontcare, v, \dontcare)$.
+Performing a iteration on a co-simulation state leads to a new state to $\fixedpoint{l}(\state{n}) = \state{n + 1}$
+The fixed point iteration is performed in order to find a convergent initialization state as defined in \cref{def:convergence}.
 \end{definition}
 
 \claudio{The above defintions is strange. If there's an algebraic loop, you cannot have an initialization procedure. At least not the way it is currently defined. Also I feel that you don't really need to define the fixed point iteration. We just need to reformulate the initialization procedure so that it matches what your plugin should output.}
@@ -136,5 +136,5 @@ Formally,
 $\exists n \in \setnat: |F(X^{n+1}, U) - F(X^{n}, U)| \leq \epsilon$.
 \end{definition}
 
-\subsection{INTO-CPS Maestro 2}\todo{We can have some more in this section - potentially half a page - Ask Casper if he can do it?}
+\subsection{INTO-CPS Maestro 2}\todo{We can have some more in this section - Ask Casper if he can do it?}
 INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}\cite{Thule2019b} is an FMI-based co-simulation framework set to supersede Maestro\cite{Maestro}. The philosophy of the framework is to apply plugins to generate co-simulation specifications expressed in the domain specific language called Maestro Base Language (MaBL). Such specifications are then interpreted and executed, resolving in the execution of a co-simulation.

@@ -41,13 +41,15 @@
 \newcommand{\false}{\mathit{false}}
 \newcommand{\feedthrough}[1]{D_{#1}}
 \newcommand{\reactivity}[1]{R_{#1}}
-%\newcommand{\finit}[1]{\mathtt{init}_{#1}}
+\newcommand{\fixedpoint}[1]{\mathtt{fixedpoint}_{#1}}
 \newcommand{\fset}[1]{\mathtt{set}_{#1}}
 \newcommand{\fget}[1]{\mathtt{get}_{#1}}
 \newcommand{\fdoStep}[1]{\mathtt{doStep}_{#1}}
 \newcommand{\timestamp}[1]{\varphi(#1)}
 \newcommand{\feedsto}[2]{U_{#1}^{#2}}
 \newcommand{\master}{\mathcal{A}}
+\newcommand{\loops}{\mathit{SCC}}
+
 \newcommand{\LoopVariables}{LV}
 \newcommand{\alloutputs}{Y}
 \newcommand{\allfeedthroughs}{D}
@@ -195,3 +197,35 @@
 \end{aligned}
 \end{equation}
 }
+
+
+
+%enable \cref{...} and \Cref{...} instead of \ref: Type of reference included in the link
+%Nice formats for \cref
+\usepackage{iflang}
+\IfLanguageName{ngerman}{
+  \crefname{table}{Tab.}{Tab.}
+  \Crefname{table}{Tabelle}{Tabellen}
+  \crefname{figure}{\figurename}{\figurename}
+  \Crefname{figure}{Abbildungen}{Abbildungen}
+  \crefname{equation}{Gleichung}{Gleichungen}
+  \Crefname{equation}{Gleichung}{Gleichungen}
+  \crefname{listing}{\lstlistingname}{\lstlistingname}
+  \Crefname{listing}{Listing}{Listings}
+  \crefname{section}{Abschnitt}{Abschnitte}
+  \Crefname{section}{Abschnitt}{Abschnitte}
+  \crefname{paragraph}{Abschnitt}{Abschnitte}
+  \Crefname{paragraph}{Abschnitt}{Abschnitte}
+  \crefname{subparagraph}{Abschnitt}{Abschnitte}
+  \Crefname{subparagraph}{Abschnitt}{Abschnitte}
+}{
+  \crefname{section}{Sect.}{Sect.}
+  \Crefname{section}{Section}{Sections}
+  \crefname{listing}{\lstlistingname}{\lstlistingname}
+  \Crefname{listing}{Listing}{Listings}
+}
+\crefname{section}{Sect.}{Sect.}
+\Crefname{section}{Section}{Sections}
+\crefname{listing}{\lstlistingname}{\lstlistingname}
+\Crefname{listing}{Listing}{Listings}
+

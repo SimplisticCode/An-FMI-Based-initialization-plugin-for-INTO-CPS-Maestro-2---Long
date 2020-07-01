@@ -1,8 +1,5 @@
 \section{Case study}
 \label{sec:case_study}
-
-%This paper's main contribution is to calculate an initialization order of a co-simulation scenario potentially containing algebraic loops. The approach make the circular dependencies between the interconnected converge in the initialization, so the initial values of the interconnected variables in the system being simulated is stable at the time the co-simulation is started.
-
 In this section, we give a simple example of a co-simulation whose correct initialization demands the solution to an algebraic loop.
 
 We consider a co-simulation of a quarter car model \cite[Section 6.4]{Schramm2014}, illustrated in \cref{fig:quarter_car}.
@@ -18,7 +15,7 @@ The equations and simulation model for this example are available online. \claud
 
 The FMUs need initial conditions that are specified by equations that restrict the possible initial values for the position and velocity of the wheel and chassis masses.
 \Cref{fig:init_state_0_sim} illustrates what happens when we simply set those positions and velocities to zero.
-Note that, because of gravity, the car chassis bounces on the suspension wheel, with a maximum compression of about 17cm. This is most likely an invalid scenario, as the suspension of the car might not be rated to be displaced that much. In any case, the purpose of simulation studies involving quarter car models is to understand how well a suspension systems absords shock when the car goes over a bump, not when the car is \emph{falls on the road}, which is what the simulation results in \cref{fig:init_state_0_sim} resemble.
+Note that, because of gravity, the car chassis bounces on the suspension wheel, with a maximum compression of about 17cm. This is most likely an invalid scenario, as the suspension of the car might not be rated to be displaced that much. In any case, the purpose of simulation studies involving quarter car models is to understand how well a suspension systems absorbs shock when the car goes over a bump, not when the car is \emph{falls on the road}, which is what the simulation results in \cref{fig:init_state_0_sim} resemble.
 
 \begin{figure}[htb]
     \centering
