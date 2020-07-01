@@ -2,7 +2,7 @@
 In this section, we provide a formalization of FMI co-simulation and a brief background on INTO-CPS Maestro 2.
 
 \subsection{FMU definitions}
-To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019, Gomes2018}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation, making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
+To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation, making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
 \begin{definition}[FMU]\label{def:fmu}
   An FMU with identifier $c$ is represented by the tuple   
   $$\tuple{\stateset{c}, \inputs{c}, \outputs{c}, \fset{c}, \fget{c}},$$
@@ -26,10 +26,13 @@ The following definitions correspond to the operations that are permitted in the
   $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$
   and $i$ denoting the order of the function call.
 \end{definition}
+\claudio{The above definition should not be called Step, because it can be confused with co-simulation step. Maybe call it Operations? Note that in the sentence before the definition, you say that these defs only refer to the initialization.}
 
 \begin{definition}[Initialization]\label{def:initialization}
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ in the same way as a step, with $\initcall_i \in \allfunctioncalls$.
 \end{definition}
+
+\claudio{I'm now confused by the above definition, as it's trying to use the step definition. But the step definition is the same as the INitialization definition....}
 
 \begin{definition}[Feed-through]\label{def:feedthrough}
   The input $\inputvar{c} \in \inputs{c}$ feeds through to output $\outputvar{c} \in \outputs{c}$, that is, $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, when there exists $v_1, v_2 \in \values$ and $\state{c} \in \stateset{c}$, such that
@@ -46,12 +49,15 @@ The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\
 The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input $\inputvar{c}$  of $c \in \fmus$. Given a co-simulation state, it checks whether all outputs connected to $\inputvar{c}$ are defined.
 \end{definition}
 
+\claudio{I think the above two definitions should come before the initialization definition, as the later uses the former (I prefer a bottom up approach.). You can also, at the beginning of sectioin 2.1, explain that you're going to ultimately define what the initialization procedure and algebraic loops are, but to do that, you have to define a couple of small things first. This allows the reader to understand why you define these small operations before getting to the bigger definitions.}
+
 \begin{definition}[Interconnected variable]
 An interconnected variable v of a co-simulation scenario $\tuple{\fmus, \coupling}$ is defined as $v \in \allinputs \cup \alloutputs$, then $\coupling : \allinputs \to \alloutputs$.
 The set all all interconnected variables is denoted: $V = \allinputs \cup \alloutputs$,
 \end{definition}
 
 A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph.
+\claudio{The graph construction is similar to the one in \cite{Gomes2019c} except that the later focuses on the co-simulation step, while we here focus on the initialization phase.}
 
 \begin{definition}[Initialization Graph]\label{def:initialization_graph}
   Given a co-simulation scenario $\tuple{\fmus, \coupling}$, and a set of feed-through dependencies $\bigcup_{c \in \fmus} \set{\feedthrough{c}}$, we define the Initialization Graph where each node represents a port $\outputvar{c} \in \outputs{c}$ or $\inputvar{c} \in \inputs{c}$ of some fmu $c \in \fmus$. The edges are created according to the following rules:
@@ -62,6 +68,7 @@ A graph of the dependencies of a co-simulation scenario is established from the 
 \end{definition}
 
 The interconnections of FMU variables can lead to circular dependencies between them, as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
+\claudio{Simon, can you update the above paragraph to use the co-simulation scenario presernted in the case study section? You can then reuse the space and the reader will already get some familiarity with the case study. Maybe you can even ditch the \cref{fig:fmu_cycle}.}
 
 \begin{figure}[H]
     \centering
@@ -78,27 +85,28 @@ The interconnections of FMU variables can lead to circular dependencies between 
 \end{figure}
 
 
-
-
-
-
-The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing. 
+The following definitions will formalize \claudio{Simon, please avoid the future tense in the text. This is because the present tense is used to describe an action that is eternal... and the text in the paper is eternal.} the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing.
+The definition of strongly connected components is adapted from the semantics of Causal Block Diagrams (see \cite{Gomes2020} for an overview).
 
 \begin{definition}[Algebraic loops] 
-An algebraic loop is defined as a strongly connected component of the graph in \cref{def:initialization_graph}. \\
-A strongly connected component: $SCC = v \in V: Path(v,v)$\\
-$\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
-An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$\todo{Look at this - can it be specified better?}\\
-Path is defined as the transitive closure of the edges of the graph denoted by \cref{def:initialization_graph}.\\
-\todo{Claudio check this definition and add a formalization of the challenge introduced}
+An algebraic loop is defined as a non-trivial strongly connected component of the graph in \cref{def:initialization_graph}.
+\claudio{Using mathit tells latex that the text is a single block and avoids formatting problems. See \url{https://tex.stackexchange.com/questions/482743/typesetting-multi-letter-variable-names-in-math-mode}.}
+Formally, a strong connected component satisfies $\set{a,b \in SCC: \mathit{Path}(a,b)}$, where $\mathit{Path}(a,b)$ is true when there's a path (including an empty path) between nodes $a$ and $b$ ($\mathit{Path}(a,a)$ is always true).
+An $SCC$ is non trivial when it has more than one node.
+%$\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
+%An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$/
+%Path is defined as the transitive closure of the edges of the graph denoted by \cref{def:initialization_graph}.
 \end{definition}
 
-\begin{definition}[Challenge of Algebraic loops]\label{def:challenge}
-The algebraic dependency will lead to the following difference between performing to following :
-\todo{Claudio check the other definitions and add a formalization of the challenge introduced}
-\end{definition}
+%\begin{definition}[Challenge of Algebraic loops]\label{def:challenge}
+%The algebraic dependency will lead to the following difference between performing to following :
+%\todo{Claudio check the other definitions and add a formalization of the challenge introduced}
+%\end{definition}
 
-As described by \cref{def:challenge} the algebraic loops introduce certain challenges in the system. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018}. It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be be performed depends on the characteristics of the scenario. The operations should be performed until the system converge. 
+Since the edges of the graph represent dependencies between variables, the value of every variable in a non trivial strong component depends on itself.
+Let $X$ denote a vector of one or more variables whose value depends on itself. Then the non trivial strong component forms an equation with the form $F(X, U) = X$, where $F$ denotes the relations between the variables in the loop, and $U$ denotes the variables whose values are calculated elsewhere.
+This means that algebraic loops need to be handled using fixed point iterations\cite{Gomes2018}. 
+% It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be performed depends on the characteristics of the scenario. The operations should be performed until the system converge. 
 An example of applying a fixed point iteration can be seen in \cref{def:fixedpoint} where a system containing an algebraic loop has to be initialized using fixed point iteration.
 \claudio{Perhaps later you can ditch \cref{fig:fixedpont} and refer to the case study section, to shorten the text.}
 \claudio{You should avoid forcing Latex to position pictures in a particular place. It's bad practice because it causes too much blank space. Also it's a lot of work for you to care about the specific placement of figures.}
@@ -110,7 +118,7 @@ An example of applying a fixed point iteration can be seen in \cref{def:fixedpoi
     \label{fig:fixedpont}
 \end{figure}
 
-The initialization of the system requires the application of fixed point iteration, as defined by \cref{def:fixedpoint}.
+% The initialization of the system requires the application of fixed point iteration, as defined \cref{def:fixedpoint}.
 \begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
 Given an Initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ of a co-simulation $\tuple{\fmus, \coupling}$ where $\LoopVariables \neq \emptyset$.\\
 Fixed point iteration should be used by 
@@ -118,13 +126,15 @@ $\forall v \in \LoopVariables $
 
 \end{definition}
 
-However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
+\claudio{The above defintions is strange. If there's an algebraic loop, you cannot have an initialization procedure. At least not the way it is currently defined. Also I feel that you don't really need to define the fixed point iteration. We just need to reformulate the initialization procedure so that it matches what your plugin should output.}
+
+A fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
 
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
-A fixed point iteration converges if a finite number of iterations will make the difference of the output value of the same operation between two following iterations within a certain threshold.\\
-$Convergence = \exists n \in \setnat: \forall p \in \LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
-$f$ is the operation performed on a loop-variable p of a given iteration n.
+A fixed point iteration converges if a finite number of iterations will make the difference of the output value of the same operation between two following iterations within a certain threshold $\epsilon$.\\
+Formally, 
+$\exists n \in \setnat: |F(X^{n+1}, U) - F(X^{n}, U)| \leq \epsilon$.
 \end{definition}
 
 \subsection{INTO-CPS Maestro 2}\todo{We can have some more in this section - potentially half a page - Ask Casper if he can do it?}
-INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}\cite{thule_maestro2_2019} is an FMI-based co-simulation framework set to supersede Maestro\cite{Maestro}. The philosophy of the framework is to apply plugins to generate co-simulation specifications expressed in the domain specific language called Maestro Base Language (MaBL). Such specifications are then interpreted and executed, resolving in the execution of a co-simulation.
+INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}\cite{Thule2019b} is an FMI-based co-simulation framework set to supersede Maestro\cite{Maestro}. The philosophy of the framework is to apply plugins to generate co-simulation specifications expressed in the domain specific language called Maestro Base Language (MaBL). Such specifications are then interpreted and executed, resolving in the execution of a co-simulation.
