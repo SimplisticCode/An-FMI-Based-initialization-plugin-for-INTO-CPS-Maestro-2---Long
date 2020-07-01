@@ -4,33 +4,44 @@ The FMI specification defines certain information about the initialization order
     \item \textit{Instantiated}
     \item \textit{Initialization Mode}
 \end{itemize}
-In each of the two states, different groups of FMU variables is potientially assigned a value. The groups are defined by FMI based on rules of the characteristics of the variables (\textit{causality}, \textit{initial} and \textit{variability}). These rules have been extracted as predicates and used in the implementation. 
-An example of a group from the FMI specification is the \textit{INI}-group that consists of FMU variables with $initial = exact\, \lor initial = \,approx $  and $variability \neq constant$. All variables of this group are set in the \textit{Instantiated}-phase of a co-simulation. Since these variables have no connections to other FMU variables - meaning they are not represented in the graph of \cref{def:initialization_graph}, the order is insignificant. However, all variables of each FMU are grouped to perform the fewest possible operations in the initialization. 
+In each of the two states, different groups of FMU variables are potentially assigned a value. The groups are defined by FMI based on rules of the characteristics of the variables (\textit{causality}, \textit{initial} and \textit{variability}). These rules have been extracted as predicates and used in the implementation. 
+An example of a group from the FMI specification is the \textit{INI}-group that consists of FMU variables with $initial = exact\, \lor initial = \,approx $  and $variability \neq constant$. All variables of this group are set in the \textit{Instantiated}-phase of a co-simulation. Since these variables have no connections to other FMU variables - meaning they are not represented in the graph of \cref{def:initialization_graph}, the order is insignificant. 
+\claudio{The above sentence is not entirely correct: variables with initial approx may still depend on other variables. The initial approx means that their values should be used as initial guesses in algebraic loop computations. Therefore, they may still be modified after entering initialization mode. To make it correct, maybe you need to ommit the condition on initial approx.}
+\claudio{Also, the reader may have no idea what does initial refer to, etc... That stuff is not on the background section. So there are two approaches to solve this: you either explain what variability and initial mean in the background, or you omit them here and rewrite the paragraph in a way that the reader does not need to understand the fmi standard. Perhaps the second option is the best one here, as this seems to be a minor detail. All you seem to want to say is: there are variables and parameters whose value does not depend on other variables. These can be set before entering the initialization mode and we will ignore them.}
+However, all variables of each FMU are grouped to perform the fewest possible operations in the initialization. 
+\claudio{Why is the above a "However" sentence? Is it contradicting the previous sentence?}
 
 In the \textit{Initialization Mode} state, all variables of all FMUs should be defined.
 The variables with \textit{causality = parameter} of each FMU are set first, and the order they are set is again insignificant as they are independent.
 Afterwards the interconnected variables should be defined, but as stated by the \cref{def:feedthrough,def:getout,def:setin} the operations \textit{get} and \textit{set} \textbf{require} a specific initialization order, and algebraic loops places even more constraints on the initialization order. All these constraints must be satisfied by the initialization procedure of the interconnected variables.
+\claudio{I feel like the previous two sentences are a bit contradictory, and are probably constructed like so because you did not deal with algebraic loops upfront. When algebraic loops are not there, there must be an order. But when algebraic loops are there, it's not that there's more constraints... it's just that one has to isolate the strong components from the rest. The result is then an order between strongly connected components, but no order within each component}
 
 \subsection{Method to calculate the initialization order}
 This section describes the approach taken to calculate the initialization order of the interconnected FMU variables. The approach is based on the strategy proposed in Gomes et al. \cite{Gomes2019b, BromanCompositionCo-Simulation}, but the approach in this work is extended with the ability to handle the initialization of algebraic loops. 
 
+\claudio{I like the way in which you've structured this subsection... but perhaps you don't need to make this structure explciit in the latex.. just leave the subsubsection comments commented out, but still follow the structure.}
 \subsubsection{Structure of the graph}
-The initialization algorithm starts by building a directed graph of the dependency between the interconnected variables of the FMUs. The graph is constructed based on the interconnected variables and internal connections (feed-through). Each interconnected variable in the system represents a node, and the edges are based on these connections. The edges of this graph represent precedence constraints based on the algebraic dependencies of the interconnected variables. Please see \cref{def:initialization_graph} for a formal definition of the graph.
+The initialization algorithm starts by building a directed graph of the dependency between the interconnected variables of the FMUs. The graph is constructed based on the interconnected variables and internal connections (feed-through), as in \cref{def:initialization_graph}. 
+%Each interconnected variable in the system represents a node, and the edges are based on these connections. The edges of this graph represent precedence constraints based on the algebraic dependencies of the interconnected variables. Please see \cref{def:initialization_graph} for a formal definition of the graph.
 
-As described earlier, not all co-simulation scenarios are suitable, and these invalid scenarios need to be identified in this phase to avoid wasting valuable development. This is accomplished by monitoring convergence of all algebraic loops. A valid co-simulation scenario must convergence by \cref{def:convergence}.
+%As described earlier, not all co-simulation scenarios are suitable, and these invalid scenarios need to be identified in this phase to avoid wasting valuable development. This is accomplished by monitoring convergence of all algebraic loops. A valid co-simulation scenario must convergence by \cref{def:convergence}.
+%\claudio{Wait a second... you can only monitor convergence once you have an initialization order, and you start solving the loops. Why is paragraph here if the calculation of an initialization order is still to be explained? Maybe move this explanation to after that part.}
 
 \subsubsection{Calculation of an initialization order}
-The topological ordering of the graph defined in \cref{def:initialization_graph} is the initialization order of the interconnected FMU variables. The elements of the topological order are the strongly connected components of the graphs. The strongly connected components are potentially algebraic loops of the system. The loops are easily identified as the strongly connected components of more than a single element. The single element members of the topological order are standard interconnected FMU variables, whose port operation should only be performed only once during the initialization procedure. \\
-The calculation of an initialization order is performed in linear time based on the number of both external and internal connections using Tarjan's algorithm \cite{tarjan_1972}. This algorithm is selected due to its properties. It solves two of the central issues of the initialization-phase of the co-simulation.
-\begin{itemize}
-    \item Identifies algebraic loops between interconnected variables (strongly connected components)
-    \item Performs a topological sorting of the Strongly Connected Components
-\end{itemize}
-The algorithm is furthermore well-established, and there exist formal proofs of its correctness and properties\cite{stefanMerz}. The algorithm is among the most efficient graph algorithms for accomplishing the defined goals.  
-Tarjan's algorithm is performing a topological sorting of the strongly connected components of a graph. Moreover, it can handle both graphs with and without algebraic loops.
+The topological ordering or the strongly connected components of the graph defined in \cref{def:initialization_graph} is the initialization order of the interconnected FMU variables. 
+The non-trivial strongly connected components are algebraic loops of the system. The trivial ones are standard interconnected FMU variables, whose port operation should only be performed only once during the initialization procedure.
+The calculation of an initialization order is performed in linear time based on the number of both external and internal connections using Tarjan's algorithm \cite{tarjan_1972}. 
+%This algorithm is selected due to its properties. It solves two of the central issues of the initialization-phase of the co-simulation.
+%\begin{itemize}
+%    \item Identifies algebraic loops between interconnected variables (strongly connected components)
+%    \item Performs a topological sorting of the Strongly Connected Components
+%\end{itemize}
+The algorithm is well-established, and there exist formal proofs of its correctness and properties\cite{stefanMerz}. 
+% The algorithm is among the most efficient graph algorithms for accomplishing the defined goals.
+% Tarjan's algorithm is performing a topological sorting of the strongly connected components of a graph. Moreover, it can handle both graphs with and without algebraic loops.
 
 \subsubsection{Handling of algebraic loops}
-As described earlier sections, it is essential to handle the algebraic loops by a particular initialization strategy since they otherwise would invalidate the result of the co-simulation. The strategy for managing algebraic loops is to identify and initialize them using a fixed point iteration until convergence. Since convergence is not guaranteed, this property is monitored. If convergence is not established within a finite number of iteration, the co-simulation is rejected to avoid running an invalid simulation.
+As described earlier sections, it is essential to handle the algebraic loops by a particular initialization strategy since they otherwise would invalidate the result of the co-simulation. The strategy for managing algebraic loops is to identify and initialize them using a fixed point iteration until convergence. Since convergence is not guaranteed, this property is monitored using \cref{def:convergence}. If convergence is not established within a finite number of iteration, the co-simulation is rejected to avoid running an invalid simulation.
 
 \subsection{Optimization of a Initialization Procedure}
 An initialization procedure can be optimized since the FMI specification allows multiple \textit{set} or \textit{get} operations of the same FMU to be performed in bulk by grouping them together to a single operation over multiple variables with similar characteristic. This criteria of optimization is formalized in \cref{def:optimization}
