@@ -31,14 +31,14 @@ This will force the co-simulation to initialize to a steady state.
 
 To make the above explanation concrete, we now show the equations that are active at the initial time for each FMU, for a correct initialization, and we show that there is an algebraic loop.
 
-For the road FMU, the initial equation is simply the initial height of the road surface, which is this case is zero, i.e., $Z_s(0)=0$.
+For the road FMU, the initial equation is simply the initial height of the road surface, which is this case is zero, i.e., $z_s=0$.
 For the suspension FMU, the following equations are active:
 \begin{align}
 & a_R = 0.0 & \text{Acceleration of tire} \\
 & v_R = 0.0 & \text{Velocity of tire} \\
 & F_{gR} = 9.81 * m_R  & \text{Gravity on the tire} \\
 & F_R = - c_R * z_R  & \text{Rubber force acting on tire} \\
-& F_A = c_A * (z_a - z_R) + d_A * (v_a - v_r)  & \text{Suspension force acting on tire} \\
+& F_A = c_A * (z_A - z_R) + d_A * (v_A - v_r)  & \text{Suspension force acting on tire} \\
 & F_{\mathit{total}} = F_R + F_A - F_{gR} & \text{Total forces acting on tire} \\
 & a_R = (1/m_R) * F_{\mathit{total}}  & \text{Acceleration of tire}
 \end{align}
