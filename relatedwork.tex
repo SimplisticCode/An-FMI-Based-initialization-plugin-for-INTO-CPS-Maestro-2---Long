@@ -6,31 +6,5 @@ Broman et al. \cite{BromanCompositionCo-Simulation} also suggest to use the topo
 
 Amalio et al. \cite{Amalio2016CheckingCo-simulation} investigate how to avoid algebraic loops in FMU based co-simulation scenarios by statically checking the architectural design of a CPS. The publication's purpose is like ours to avoid invalid co-simulation scenarios. Nevertheless, they achieve this by excluding co-simulation scenarios containing algebraic loops. Their method is realized in a co-simulation tool, INTO-SysML\cite{Miyazawa2016INtegratedModelling}. Formal methods form the basis of their work (Theorem Proving and Model-checking). It will be an inspiration for the future work of formally verifying the plugin and other parts of Maestro 2. 
 
-\claudio{Also related: \cite{EvoraGomez2019a}. Copy paste from paper content below (please have a look and rephrase).
-A suggestion to distinguish your work from theirs: the resulting algorithm is verified against the simulation semantics (hence the more formal approach.). But this is a weak argument. 
-In practice, we will probably need to do more work to really move ahead of the state of the art.
-}
-{\scriptsize
-\begin{verbatim}
-The key idea is that a topological sorting of the directed
-acyclic graph (DAG) naturally gives the order in which the
-variables must be initialised. Therefore, this led to study
-how to convert a generic directed graph into a DAG. The
-solution found is to build the graph of strongly connected
-components (SCC) corresponding to cyclic dependencies.
-The resulting graph in which each SCC has been con-
-tracted into a single vertex is a DAG. We use Tarjan’s SCC
-algorithm (Tarjan, 1972) (used in many Modelica tools) to
-identify each SCC in the dependency graph (runs in lin-
-ear time). Following the order obtained with a topological
-sorting on the contracted SCC graph:
-1. for nodes which were not contracted, simply propa-
-gate their values
-2. for nodes which were contracted (they correspond
-to cyclic dependencies), we solve the initialisation
-problem using an iterative algorithm called JNRA
-(Jacobian based Newton-Raphson Algorithm) in-
-spired by traditional Newton-Raphson algorithms of-
-ten used for electric load flow computation.
-\end{verbatim}
-}
+The work by \cite{EvoraGomez2019a} in of a similar nature to ours. They use Tarjan’s SCC algorithm to generate a sorted DAG of strongly connected components to solve the initialization problem.
+Even though their work is very similar to ours, we extend their approach with a verification against the simulation semantics resulting in a formal more sounds approach. However further work will look into further improvements of the current approach.

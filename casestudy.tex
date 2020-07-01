@@ -3,19 +3,19 @@
 In this section, we give a simple example of a co-simulation whose correct initialization demands the solution to an algebraic loop.
 
 We consider a co-simulation of a quarter car model \cite[Section 6.4]{Schramm2014}, illustrated in \cref{fig:quarter_car}.
-We omit the equations that each FMU is solving but note that gravity acts on both wheel and chassis masses, and that the origin of each mass is when the springs are not displaced.
-The equations and simulation model for this example are available online. \claudio{Simon, could you please make the QuarterCarCosimScenario.mo, QuarterCarMass.mo, and Suspension.mo, files available online? They're the right under the case study folder. Then place a link to those here. You might want to also add a readme file describing how to open them (using Open Modelica).}
+We omit the equations that each FMU is solving but note that gravity acts on both wheel and chassis masses and that the origin of each mass is when the springs are not displaced.
+The equations and simulation model for this example are available online\footnote{\url{https://github.com/SimplisticCode/QuarterCarCaseStudy}}. 
 
 \begin{figure}[htb]
     \centering
     \includegraphics[width=0.8\textwidth]{images/quarter_car.pdf}
-    \caption{Quarter car model co-simulation. Adapted from \cite[Section 6.4]{Schramm2014}. \claudio{Simon, please improve the figure with maybe some color coding for the different components.}}
+    \caption{Quarter car model co-simulation. Adapted from \cite[Section 6.4]{Schramm2014}.}
     \label{fig:quarter_car}
 \end{figure}
 
-The FMUs need initial conditions that are specified by equations that restrict the possible initial values for the position and velocity of the wheel and chassis masses.
+The FMUs need initial conditions specified by equations that restrict the possible initial values for the position and velocity of the wheel and chassis masses.
 \Cref{fig:init_state_0_sim} illustrates what happens when we simply set those positions and velocities to zero.
-Note that, because of gravity, the car chassis bounces on the suspension wheel, with a maximum compression of about 17cm. This is most likely an invalid scenario, as the suspension of the car might not be rated to be displaced that much. In any case, the purpose of simulation studies involving quarter car models is to understand how well a suspension systems absorbs shock when the car goes over a bump, not when the car is \emph{falls on the road}, which is what the simulation results in \cref{fig:init_state_0_sim} resemble.
+Note that, because of gravity, the car chassis bounces on the suspension wheel, with a maximum compression of about 17cm. This is most likely an invalid scenario, as the suspension of the car might not be rated to be displaced that much. In any case, the purpose of simulation studies involving quarter car models is to understand how well a suspension system absorbs shock when the car goes over a bump, not when the car is \emph{falls on the road}, which is what the simulation results in \cref{fig:init_state_0_sim} resemble.
 
 \begin{figure}[htb]
     \centering
@@ -27,9 +27,9 @@ Note that, because of gravity, the car chassis bounces on the suspension wheel, 
 The correct way to initialize this co-simulation scenario is to force the master algorithm to calculate the valid initial velocities and position from equations that force the accelerations and velocities on the masses to be zero.
 This will force the co-simulation to initialize to a steady state.
 
-To make the above explanation concrete, we now show the equations that are active at the initial time for each FMU, for a correct initialization, and we show that there is an algebraic loop.
+To make the above explanation concrete, we now show the equations that are active at the initial time for each FMU for a correct initialization, and we show that there is an algebraic loop.
 
-For the road FMU, the initial equation is simply the initial height of the road surface, which is this case is zero, i.e., $z_s=0$.
+For the road FMU, the initial equation is simply the initial height of the road surface, which in this case is zero, i.e., $z_s=0$.
 For the suspension FMU, the following equations are active:
 \begin{align}
 & a_R = 0.0 & \text{Acceleration of tire} \\
@@ -48,10 +48,10 @@ Finally, for the Chassis FMU, the following equations are active at the initial 
 & a_A = (1/m_A) * (- F_A - F_{gA})  & \text{Acceleration of chassis}
 \end{align}
 
-To see that there's an algebraic loop, note that the output $z_A$ of the chassis FMU is not restricted directly, but instead has to be computed from the acceleration equations $a_A = 0 = (1/m_A) * (- F_A - F_{gA})$.
-The later contain the output $F_A$ of the Suspension FMU.
+To see that there is an algebraic loop, note that the output $z_A$ of the chassis FMU is not restricted directly, but instead has to be computed from the acceleration equations $a_A = 0 = (1/m_A) * (- F_A - F_{gA})$.
+The later contains the output $F_A$ of the Suspension FMU.
 This output, in turn, depends on $z_A$, thus yielding an algebraic loop.
-\Cref{fig:init_state_correct_sim} shows the simulation results when the algebraic loops is properly solved during initialization.
+\Cref{fig:init_state_correct_sim} shows the simulation results when the algebraic loop is properly solved during initialization.
 
 \begin{figure}[htb]
     \centering
