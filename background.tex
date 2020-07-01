@@ -23,8 +23,9 @@ The following definitions correspond to the operations that are permitted in the
 
 \begin{definition}[Step]\label{def:cosim_step}
   Given a scenario $\tuple{\fmus, \coupling}$, a co-simulation step, or just step, is a finite ordered sequence of FMU function calls $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
-  $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$
+  $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
   and $i$ denoting the order of the function call.
+  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:}.
 \end{definition}
 
 \begin{definition}[Initialization]\label{def:initialization}
@@ -63,7 +64,7 @@ A graph of the dependencies of a co-simulation scenario is established from the 
 
 The interconnections of FMU variables can lead to circular dependencies between them, as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{minipage}{0.55\textwidth}
         \centering
@@ -79,16 +80,14 @@ The interconnections of FMU variables can lead to circular dependencies between 
 
 The following definitions will formalize the concept of an algebraic loop in a co-simulation scenario, and define the problem these algebraic loops are introducing. 
 
-\begin{definition}[Algebraic loops] 
-An algebraic loop is defined as a strongly connected component of the graph in \cref{def:initialization_graph}. 
-A strongly connected component: $SCC = v \in V: Path(v,v)$\\
-$\LoopVariables = \{v | v \in V : Path(v,v)\}$ \\
-An algebraic loop is defined as the set $\{p_1, p_2 | p_1, p_2 \in \LoopVariables: Path(p_1, p_2) \land Path(p_2, p_1)\}$\todo{Look at this - can it be specified better?}\\
+\begin{definition}[Algebraic loops] \label{def:loop}
+An algebraic loop is defined as a strongly connected component(SCC( of the graph in \cref{def:initialization_graph}. 
+A strongly connected component: $SCC = v \in V: Path(v,v)$ and satisfying: $\forall p_1, p_2 \in SCC: Path(p_1, p_2) \land Path(p_2, p_1),$\\
+$\loops$ denote the set of all distinct SCCs and $\abs$
 Path is defined as the transitive closure of the edges of the graph denoted by \cref{def:initialization_graph}.\\
 \end{definition}
 
-The algebraic loops introduce certain challenges in the simulation in order to handle a on-linear system that can lead to unstable simulation behavior. This means that algebraic loops needs to be handled using fixed point iterations\cite{Gomes2018} to reach a valid initial state as described in \cref{sec:case_study}. Fixed point iteration is a technique to repeatedly perform the functions of an order sub-sequence of the co-simulation step. The number of repetitions the operations should be be performed depends on the scenario. However the repetitions of the operations is performed until the convergence of the system. Fixed point iteration 
-
+The algebraic loops introduce specific challenges in the simulation to handle a non-linear system that can lead to unstable simulation behavior. Algebraic loops are handled using fixed point iterations\cite{Gomes2018} to reach a valid initial state as described in \cref{sec:case_study}. Fixed point iteration is a technique to repeatedly perform the functions of an order sub-sequence of the co-simulation step. The number of repetitions the operations should be performed depends on the scenario. However, the repetitions of the operations are performed until the convergence of the system. 
 
 \begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
 A fixed point iteration of given loop $l$ consist of the order sequence of functions calls:
@@ -97,11 +96,11 @@ Performing a iteration on a co-simulation state leads to a new state to $\fixedp
 The fixed point iteration is performed in order to find a convergent initialization state as defined in \cref{def:convergence}.
 \end{definition}
 
-However a fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
+However, a fixed point iteration technique is not guaranteed to convergence if the system is unstable. It means that an upper bound of the number of repetitions needs to be established to ensure termination. In the case of a non-converging algebraic loop, the simulation should be stopped since the co-simulation result would not be trustworthy. The criteria of a valid co-simulation scenario are specified in \cref{def:convergence}.
 
 \begin{definition}[Convergence of Fixed point iteration]\label{def:convergence}
 A fixed point iteration converges if a finite number of iterations will make the difference of the output value of the same operation between two following iterations within a certain threshold.\\
-$Convergence = \exists n \in \setnat: \forall p \in \LoopVariables \implies |f(p, n + 1) - f(p, n)| \leq T$\\
+$Convergence = \exists n \in \setnat: \forall l \in \loops \implies |f(p, n + 1) - f(p, n)| \leq T$\\
 $f$ is the operation performed on a loop-variable p of a given iteration n.
 \end{definition}
 
