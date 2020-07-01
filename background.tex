@@ -32,7 +32,8 @@ The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
   $\functioncall_i \in \initcall_{} = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
   and $i$ denoting the order of the function call.
-  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:loop}.
+  Fixed point is defined in \cref{def:fixedpoint} and
+  loops in defined as the set of all non trivial SCC see \cref{def:loop}.
 \end{definition}
 
 \begin{definition}[Feed-through]\label{def:feedthrough}
@@ -88,17 +89,8 @@ An $SCC$ is non trivial when it has more than one node.
 Since the edges of the graph represent dependencies between variables, the value of every variable in a non trivial strong component depends on itself.
 Let $X$ denote a vector of one or more variables whose value depends on itself. Then the non trivial strong component forms an equation with the form $F(X, U) = X$, where $F$ denotes the relations between the variables in the loop, and $U$ denotes the variables whose values are calculated elsewhere.
 This means that algebraic loops need to be handled using fixed point iterations\cite{Gomes2018}. 
-% It is a technique to repeatedly perform the steps of a sub-list of the co-simulation step. The number of repetitions the operations should be performed depends on the characteristics of the scenario. The operations should be performed until the system converge. 
-An example of applying a fixed point iteration can be seen in \cref{def:fixedpoint} where a system containing an algebraic loop has to be initialized using fixed point iteration.
-\claudio{Perhaps later you can ditch \cref{fig:fixedpont} and refer to the case study section, to shorten the text.}
-\claudio{You should avoid forcing Latex to position pictures in a particular place. It's bad practice because it causes too much blank space. Also it's a lot of work for you to care about the specific placement of figures.}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{images/fixedpoint.pdf}
-    \caption{Fixed point iteration in a co-simulation scenario}
-    \label{fig:fixedpont}
-\end{figure}
+An example of a co-simulation scenario where fixed point iteration ia needed can be seen in \cref{fig:fmu_cycle} where the Initialization Graph of the quarter car system from \cref{sec:case_study} is shown.
 
 % The initialization of the system requires the application of fixed point iteration, as defined \cref{def:fixedpoint}.
 %\begin{definition}[Fixed point iteration of an Initialization procedure]\label{def:fixedpoint}
@@ -108,7 +100,7 @@ An example of applying a fixed point iteration can be seen in \cref{def:fixedpoi
 %The fixed point iteration is performed in order to find a convergent initialization state as defined in \cref{def:convergence}.
 %\end{definition}
 
-\claudio{The above defintions is strange. If there's an algebraic loop, you cannot have an initialization procedure. At least not the way it is currently defined. Also I feel that you don't really need to define the fixed point iteration. We just need to reformulate the initialization procedure so that it matches what your plugin should output.}
+%\claudio{The above defintions is strange. If there's an algebraic loop, you cannot have an initialization procedure. At least not the way it is currently defined. Also I feel that you don't really need to define the fixed point iteration. We just need to reformulate the initialization procedure so that it matches what your plugin should output.}
 
 A fixed point iteration technique is not guaranteed to convergence if the system is unstable. This means that an upper bound of the number of repetitions needs to be established to ensure termination. In case of a non-converging algebraic loop the simulation should be stopped since the result of the co-simulation scenario would not be trustworthy. The criteria of a valid co-simulation scenario is specified in \cref{def:convergence}.
 
