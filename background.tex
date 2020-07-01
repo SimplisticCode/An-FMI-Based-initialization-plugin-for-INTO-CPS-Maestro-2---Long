@@ -23,8 +23,9 @@ The following definitions correspond to the operations that are permitted in the
 
 \begin{definition}[Step]\label{def:cosim_step}
   Given a scenario $\tuple{\fmus, \coupling}$, a co-simulation step, or just step, is a finite ordered sequence of FMU function calls $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
-  $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$
+  $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
   and $i$ denoting the order of the function call.
+  Fixed point is defined in \cref{def:fixedpoint} and loop in \cref{def:}.
 \end{definition}
 \claudio{The above definition should not be called Step, because it can be confused with co-simulation step. Maybe call it Operations? Note that in the sentence before the definition, you say that these defs only refer to the initialization.}
 
@@ -70,7 +71,7 @@ A graph of the dependencies of a co-simulation scenario is established from the 
 The interconnections of FMU variables can lead to circular dependencies between them, as seen in \cref{fig:fmu_cycle} showing a co-simulation scenario containing an algebraic loop and its Initialization Graph.
 \claudio{Simon, can you update the above paragraph to use the co-simulation scenario presernted in the case study section? You can then reuse the space and the reader will already get some familiarity with the case study. Maybe you can even ditch the \cref{fig:fmu_cycle}.}
 
-\begin{figure}[H]
+\begin{figure}
     \centering
     \begin{minipage}{0.55\textwidth}
         \centering
