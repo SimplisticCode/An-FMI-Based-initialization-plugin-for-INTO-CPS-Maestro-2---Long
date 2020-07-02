@@ -31,6 +31,10 @@
 \usepackage{cite}
 \usepackage[capitalise,nameinlink]{cleveref}
 \usepackage{url}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage{environ}
+\usepackage{filecontents}
 \usepackage{todonotes}
 \usepackage{cleveref}
 % Used for displaying a sample figure. If possible, figure files should
@@ -40,8 +44,19 @@
 % to display URLs in blue roman font according to Springer's eBook style:
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
 \input{commands}
+\input{case_study_results}
 
 \begin{document}
+
+\NewEnviron{scaletikzpicturetowidth}[1]{%
+  \def\tikz@width{#1}%
+  \def\tikzscale{1}\begin{lrbox}{\measure@tikzpicture}%
+  \BODY
+  \end{lrbox}%
+  \pgfmathparse{#1/\wd\measure@tikzpicture}%
+  \edef\tikzscale{\pgfmathresult}%
+  \BODY
+}
 %
 \title{An FMI-Based Initialization Plugin for INTO-CPS Maestro 2}
 %

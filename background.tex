@@ -30,14 +30,14 @@ The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input
 \end{definition}
 
 \begin{definition}[Fixed Point Computation]\label{def:fixedpoint}
-The $\fixedpoint{l}$ represents an order sequence of the setting or getting of all input and output variables of a given non-trivial SCC $l$.
+The $\fixedpoint{l}$ represents an order sequence of the setting or getting of all input and output variables of a given SCC $l$.
 \end{definition}
 
 \begin{definition}[Initialization]\label{def:initialization}
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
-  $\functioncall_i \in \initcall_{} = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}} \cup (\bigcup_{l \in loops} \fixedpoint{l}),$
+  $\functioncall_i \in \initcall_{} = \bigcup_{l \in loops} \fixedpoint{l},$
   and $i$ denoting the order of the function call.
-  loops in defined as the set of all non trivial SCC see \cref{def:loop}.
+  loops in defined as the set of all SCC see \cref{def:loop}.
 \end{definition}
 
 \begin{definition}[Feed-through]\label{def:feedthrough}
