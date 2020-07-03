@@ -37,17 +37,15 @@ Note that, because of gravity, the car chassis bounces on the suspension wheel, 
         ticklabel style={font=\tiny,fill=white},
         minor tick style={draw=none},
         minor grid style={thin,color=black!10},
-        ylabel= Car position,
+        ylabel= Car chassis position (m),
         xlabel= Time (s),
         tick align=outside,
-        x label style={at={(axis description cs:0.5,-0.1)},anchor=north},
-        y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south},
-        xlabel style={color=blue!50!cyan},
-        ylabel style={align=center,rotate=-90,color=blue!50!cyan},
+        x label style={at={(axis description cs:0.5,-0.1)},anchor=north, color=blue!50!cyan},
+        y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south, color=blue!50!cyan},
         x tick label style={
             /pgf/number format/assume math mode, font=\sf\scriptsize}
         ]
-    \addplot [line width=2.5pt, red] table [x=a, y=b, col sep=comma] {incorrect.csv};
+    \addplot [line width=2.5pt, red] table [x= a, y=b, col sep=comma] {incorrect.csv};
 \end{axis}
 \end{tikzpicture}
     \caption{Simulation results when position and velocity of the chassis mass is zero.}
@@ -103,13 +101,11 @@ This output, in turn, depends on $z_A$, thus yielding an algebraic loop.
         ticklabel style={font=\tiny,fill=white},
         minor tick style={draw=none},
         minor grid style={thin,color=black!10},
-        x label style={at={(axis description cs:0.5,-0.1)},anchor=north},
-        y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south},
-        ylabel= Car position,
+        ylabel= Car chassis position (m),
         xlabel= Time (s),
         tick align=outside,
-        xlabel style={color=blue!50!cyan},
-        ylabel style={align=center,rotate=-90,color=blue!50!cyan},
+        x label style={at={(axis description cs:0.5,-0.1)},anchor=north, color=blue!50!cyan},
+        y label style={at={(axis description cs:-0.1,.5)},rotate=90,anchor=south, color=blue!50!cyan},
         x tick label style={
             /pgf/number format/assume math mode, font=\sf\scriptsize}
             ]

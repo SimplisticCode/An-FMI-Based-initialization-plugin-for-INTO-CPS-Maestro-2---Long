@@ -29,9 +29,11 @@ The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\
 The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input $\inputvar{c}$  of $c \in \fmus$. Given a co-simulation state, it checks whether all outputs connected to $\inputvar{c}$ are defined.
 \end{definition}
 
-\begin{definition}[Fixed Point Computation]\label{def:fixedpoint}
+\begin{definition}[Fixed Point]\label{def:fixedpoint}
 The $\fixedpoint{l}$ represents an order sequence of the setting or getting of all input and output variables of a given SCC $l$, see \cref{def:loop} for a definition of SCC.
+The $\fixedpoint{l} \subseteq \bigcup_{c \in \fmus} \set{\fget{c},\fset{c}}$ 
 \end{definition}
+
 
 \begin{definition}[Initialization]\label{def:initialization}
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
@@ -39,6 +41,9 @@ The $\fixedpoint{l}$ represents an order sequence of the setting or getting of a
   and $i$ denoting the order of the function call.
   loops in defined as the set of all SCC see \cref{def:loop}.
 \end{definition}
+
+It should be noted that a trivial SCC (\see \cref{def:loop}) is only a single get or set action and is not regarded as a fixed point outside \cref{def:initialization}, but just a simple computation.
+
 
 \begin{definition}[Feed-through]\label{def:feedthrough}
   The input $\inputvar{c} \in \inputs{c}$ feeds through to output $\outputvar{c} \in \outputs{c}$, that is, $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, when there exists $v_1, v_2 \in \values$ and $\state{c} \in \stateset{c}$, such that

@@ -6,7 +6,7 @@ The FMI specification defines certain information about the initialization order
 \end{itemize}
 In each of the two states, different groups of FMU variables and parameters are potentially assigned a value. The groups are defined by FMI based on rules of the characteristics of the variables. These rules have been extracted as predicates and used in the implementation. 
 Some groups consist of variables and parameters whose value does not depend on other variables. These can be set before entering the \textit{Initialization Mode}. Since these variables have no connections to other FMU variables - meaning they are not represented in the graph of \cref{def:initialization_graph}, the order is insignificant. 
-The operations are on the variables of each FMU are grouped to perform the fewest possible operations in the initialization. 
+The setting and getting operations are of each FMU are grouped to perform the fewest possible operations in the initialization. 
 
 In the \textit{Initialization Mode} state, all variables of all FMUs should be defined.
 The parameters of each FMU are set first, and the order in which they are set is again insignificant as they are independent.
@@ -26,8 +26,8 @@ The initialization algorithm starts by building a directed graph of the dependen
 %\claudio{Wait a second... you can only monitor convergence once you have an initialization order, and you start solving the loops. Why is paragraph here if the calculation of an initialization order is still to be explained? Maybe move this explanation to after that part.}
 
 %\subsubsection{Calculation of an initialization order}
-The topological ordering or the strongly connected components of the graph defined in \cref{def:initialization_graph} is the initialization order of the interconnected FMU variables. 
-The non-trivial strongly connected components are algebraic loops of the system. The trivial ones are standard interconnected FMU variables, whose port operation should only be performed only once during the initialization procedure.
+The topological ordering of the strongly connected components of the graph defined in \cref{def:initialization_graph} is the initialization order of the interconnected FMU variables. 
+The non-trivial strongly connected components are algebraic loops of the system. The trivial ones are standard interconnected FMU variables, whose port operation should be performed only once during the initialization procedure.
 The calculation of an initialization order is performed in linear time based on the number of both external and internal connections using Tarjan's algorithm \cite{tarjan_1972}. 
 %This algorithm is selected due to its properties. It solves two of the central issues of the initialization-phase of the co-simulation.
 %\begin{itemize}
@@ -39,7 +39,7 @@ The algorithm is well-established, and there exist formal proofs of its correctn
 % Tarjan's algorithm is performing a topological sorting of the strongly connected components of a graph. Moreover, it can handle both graphs with and without algebraic loops.
 
 %\subsubsection{Handling of algebraic loops}
-As described earlier sections, it is essential to handle the algebraic loops by a particular initialization strategy since they otherwise would invalidate the result of the co-simulation. The strategy for managing algebraic loops is to identify and initialize them using a fixed point iteration until convergence. Since convergence is not guaranteed, this property is monitored using \cref{def:convergence}. If convergence is not established within a finite number of iteration, the co-simulation is rejected to avoid running an invalid simulation.
+As described in earlier sections, it is essential to handle the algebraic loops by a particular initialization strategy since they otherwise would invalidate the result of the co-simulation. The strategy for managing algebraic loops is to identify and initialize them using a fixed point iteration until convergence. Since convergence is not guaranteed, this property is monitored using \cref{def:convergence}. If convergence is not established within a finite number of iteration, the co-simulation is rejected to avoid running an invalid simulation.
 
 \subsection{Optimization of a Initialization Procedure}
 An initialization procedure can be optimized since the FMI specification allows multiple \textit{set} or \textit{get} operations of the same FMU to be performed in bulk by grouping them together to a single operation over multiple variables with similar characteristic. This criteria of optimization is formalized in \cref{def:optimization}
