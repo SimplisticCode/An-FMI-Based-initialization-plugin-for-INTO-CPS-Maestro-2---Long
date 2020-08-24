@@ -24,8 +24,8 @@ Note that, because of gravity, the car chassis bounces on the suspension wheel, 
         at={(0,0)},
         width= 12cm,
         height = 8cm,
-        ymin=-0.2,
-        ymax=0.05,
+        ymin=-20,
+        ymax=5,
         xmin=0,
         xmax=4.1,
         grid=both,
@@ -37,7 +37,7 @@ Note that, because of gravity, the car chassis bounces on the suspension wheel, 
         ticklabel style={font=\tiny,fill=white},
         minor tick style={draw=none},
         minor grid style={thin,color=black!10},
-        ylabel= Car chassis position (m),
+        ylabel= Car chassis position (cm),
         xlabel= Time (s),
         tick align=outside,
         x label style={at={(axis description cs:0.5,-0.1)},anchor=north, color=blue!50!cyan},
@@ -45,7 +45,7 @@ Note that, because of gravity, the car chassis bounces on the suspension wheel, 
         x tick label style={
             /pgf/number format/assume math mode, font=\sf\scriptsize}
         ]
-    \addplot [line width=2.5pt, red] table [x= a, y=b, col sep=comma] {incorrect.csv};
+    \addplot [line width=2.5pt, red] table [x= a, y=c, col sep=comma] {incorrect.csv};
 \end{axis}
 \end{tikzpicture}
     \caption{Simulation results when position and velocity of the chassis mass is zero.}
@@ -81,15 +81,15 @@ The later contains the output $F_A$ of the Suspension FMU.
 This output, in turn, depends on $z_A$, thus yielding an algebraic loop.
 \Cref{fig:init_state_correct_sim} shows the simulation results when the algebraic loop is properly solved during initialization.
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
 \begin{tikzpicture}
     \begin{axis}[
         %at={(0,0)},
         width= 12cm,
         height = 8cm,
-        ymin=-0.18,
-        ymax=-0.05,
+        ymin=-18,
+        ymax=-5,
         xmin=0,
         xmax=4.1,
         grid=both,
@@ -109,7 +109,7 @@ This output, in turn, depends on $z_A$, thus yielding an algebraic loop.
         x tick label style={
             /pgf/number format/assume math mode, font=\sf\scriptsize}
             ]
-    \addplot [line width=2.5pt, red] table [x=a, y=b, col sep=comma] {correct.csv};
+    \addplot [y filter/.code={\pgfmathparse{\pgfmathresult*100.}\pgfmathresult}][line width=2.5pt, red] table [x=a, y=b, col sep=comma] {correct.csv};
 \end{axis}
 \end{tikzpicture}
     \caption{Simulation results starting from a correct initial state (a steady state).}
