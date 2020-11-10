@@ -14,7 +14,7 @@ After the \textit{Initialization Mode} state, all variables of all FMUs in the c
 %\%claudio{I feel like the previous two sentences are a bit contradictory, and are probably constructed like so because you did not deal with algebraic loops upfront. When algebraic loops are not there, there must be an order. But when algebraic loops are there, it's not that there's more constraints... it's just that one has to isolate the strong components from the rest. The result is then an order between strongly connected components, but no order within each component}
 
 \subsection{Method to calculate the initialization order}
-This section describes the approach taken to calculate the initialization order of the interconnected FMU variables. The approach is based on the strategy proposed in Gomes et al. \cite{Gomes2019b, BromanCompositionCo-Simulation}, but the approach in this work is extended with the ability to handle the Initialization of algebraic loops. 
+This section describes the approach taken to calculate the initialization order of the interconnected FMU variables. The approach is based on the strategy proposed in Gomes et al. \cite{Gomes2020b, BromanCompositionCo-Simulation}, but the approach in this work is extended with the ability to handle the Initialization of algebraic loops. 
 
 %\claudio{I like the way in which you've structured this subsection... but perhaps you don't need to make this structure explciit in the latex.. just leave the subsubsection comments commented out, but still follow the structure.}
 %\subsubsection{Structure of the graph}
