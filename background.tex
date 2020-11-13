@@ -58,7 +58,7 @@ It should be noted that a trivial SCC (see \cref{def:loop}) is only a single get
 %The set all all interconnected variables is denoted: $V = \allinputs \cup \alloutputs$,
 %\end{definition}
 
-A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph. The graph construction is similar to the one in \cite{Gomes2019c}, except the later focuses on a general co-simulation step, while this work focus on the initialization phase.
+A graph of the dependencies of a co-simulation scenario is established from the interconnected variables by \cref{def:initialization_graph}. The graph is the foundation for the calculation of the initialization procedure and is therefore referred to as the Initialization Graph. The graph construction is similar to the one in \cite{Gomes2020b}, except the later focuses on a general co-simulation step, while this work focus on the initialization phase.
 
 \begin{definition}[Initialization Graph]\label{def:initialization_graph}
   Given a co-simulation scenario $\tuple{\fmus, \coupling}$, and a set of feed-through dependencies $\bigcup_{c \in \fmus} \set{\feedthrough{c}}$, we define the Initialization Graph where each node represents a port $\outputvar{c} \in \outputs{c}$ or $\inputvar{c} \in \inputs{c}$ of some fmu $c \in \fmus$. The edges are created according to the following rules:
@@ -111,7 +111,7 @@ $\exists n \in \setnat: |F(X^{n+1}, U) - F(X^{n}, U)| \leq \epsilon$.
 \end{definition}
 
 \subsection{INTO-CPS Maestro 2}
-INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}.}~\cite{Thule2019b} is a framework for creating simulation specifications and executing such specifications. The framework is FMI-based and set to supersede Maestro~\cite{Maestro} with the main goal of supporting research into co-simulation based on FMI. 
+INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}.}~\cite{Thule2020a} is a framework for creating simulation specifications and executing such specifications. The framework is FMI-based and set to supersede Maestro~\cite{Maestro} with the main goal of supporting research into co-simulation based on FMI. 
 
 The philosophy of the framework is to separate the specification of a co-simulation from the execution. This allows one to inspect and verify, manually or automatically, how a given co-simulation is to be executed. 
 
