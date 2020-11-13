@@ -13,7 +13,7 @@ After the \textit{Initialization Mode} state, all variables of all FMUs in the c
 
 %\%claudio{I feel like the previous two sentences are a bit contradictory, and are probably constructed like so because you did not deal with algebraic loops upfront. When algebraic loops are not there, there must be an order. But when algebraic loops are there, it's not that there's more constraints... it's just that one has to isolate the strong components from the rest. The result is then an order between strongly connected components, but no order within each component}
 
-\subsection{Method to calculate the initialization order}
+\subsection{Method to Calculate the Initialization Order}
 This section describes the approach taken to calculate the initialization order of the interconnected FMU variables. The approach is based on the strategy proposed in Gomes et al. \cite{Gomes2019b, BromanCompositionCo-Simulation}, but the approach in this work is extended with the ability to handle the Initialization of algebraic loops. 
 
 %\claudio{I like the way in which you've structured this subsection... but perhaps you don't need to make this structure explciit in the latex.. just leave the subsubsection comments commented out, but still follow the structure.}
@@ -38,19 +38,19 @@ The calculation of an initialization order is performed in linear time based on 
 % Tarjan's algorithm is performing a topological sorting of the strongly connected components of a graph. Moreover, it can handle both graphs with and without algebraic loops.
 
 %\subsubsection{Handling of algebraic loops}
-As described in earlier sections, it is essential to handle the algebraic loops by a particular initialization strategy since non-converging loops otherwise would invalidate the co-simulation result. The procedure for managing algebraic loops is identifying and initializing them using fixed point iteration until convergence. Since convergence is not guaranteed, this property is monitored using \cref{def:convergence}. Suppose convergence is not established within a finite number of iterations\footnote{We have chosen XX due to ---}, since the difference between the values of the SCC variables of two following iterations never approaches zero. In that case, the co-simulation is rejected to avoid running an invalid simulation.
+As described in earlier sections, it is essential to handle algebraic loops by a particular initialization strategy since the loops otherwise would invalidate the co-simulation result. The procedure for initializing algebraic loops is identifying and initializing them using a fixed point iteration strategy until convergence. Since convergence is not guaranteed, this property is monitored using \cref{def:convergence} to see if the difference between all the output variables of two successive iterations is below a defined threshold. Suppose convergence is not established within a finite number of iterations\footnote{5 iterations is the default in our approach. This number is based on experience.}, the co-simulation scenario is rejected to avoid running an invalid simulation.
 
 \subsection{Optimization of a Initialization Procedure}
-An initialization procedure can be optimized since the FMI specification allows multiple \textit{set} or \textit{get} operations of the same FMU to be performed in bulk by grouping them together to a single operation over multiple variables with similar characteristic. This criteria of optimization is formalized in \cref{def:optimization}.
+An initialization procedure can sometimes be optimized since the FMI specification allows multiple \textit{set} or \textit{get} operations of the same FMU to be performed in bulk by grouping them together to a single operation over multiple variables with similar characteristic. This criteria of optimization is formalized in \cref{def:optimization}.
 \begin{definition}[Optimization of a Initialization procedure]\label{def:optimization}
   Given an initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ with a finite ordered sequence of FMU function calls $\functioncall_i \in \allfunctioncalls = \bigcup_{c \in \fmus} \set{\fset{c},\fget{c}},$ and $i$ denoting the order of the function call. It can be optimized if $\exists \functioncall_i, \functioncall_{i +1} \in \allfunctioncalls : \exists c \in \fmus :(\functioncall_i \in {\fset{c}} \land \functioncall_{i+1} \in {\fset{c}}) \lor (\functioncall_i \in {\fget{c}} \land \functioncall_{i+1} \in {\fget{c}})$
 \end{definition}
 %Since an Initialization procedure is defined in the same way as other co-simulation steps (see \cref{def:initialization}), the optimization criteria described in \cref{def:optimization} is valid for an arbitrary co-simulation step. \\
-The correctness of the optimization in \cref{def:optimization} is established by the proof of using the Initialization Graph's topological ordering as the initialization order by Gomes et al. \cite{Gomes2019}. Their proof is trivially shown to cover this approach since the presented optimization does not change the structure of the Initialization Graph. \\
+The correctness of the optimization in \cref{def:optimization} is established by the proof of using the Initialization Graph's topological ordering as the initialization order by Gomes et al. \cite{Gomes2019}. Their proof is trivially shown to cover this approach since the optimization does not change the structure of the Initialization Graph. \\
 A limitation of this optimization strategy is that it is not guaranteed to find all potentially valid optimizations of a co-simulation scenario. Considering it works only on a specific co-simulation step (a topological order of a graph), which is not necessarily unique for a given co-simulation scenario. A more advanced optimization strategy needs to be developed to perform all viable optimizations of a co-simulation step. Another solution is to apply this optimization strategy on the set of all valid co-simulation steps - yielding a potential very inefficient initialization algorithm.
-\todo{Describe efficiency of the initialization vs rest of the co-simulation}The Initialization of a co-simulation is typically 
+The initialization of a co-simulation is typically not the most time consuming or computational heaviest part of the co-simulation. However, it is still considered a low hanging fruit to apply this optimization to optimize the initialization-
 
-\subsection{The entire Initialization Strategy}
+\subsection{The Complete Initialization Strategy}
 The pseudo-code in \cref{alg:initialization} formulates the entire initialization strategy of the interconnected variables of a co-simulation scenario.
 \begin{figure}[H]
   \centering
@@ -72,4 +72,4 @@ The pseudo-code in \cref{alg:initialization} formulates the entire initializatio
     \end{algorithm}
 \end{figure}
 
-As seen from the algorithm in \cref{alg:initialization}, the algebraic loops are handled using a different strategy compared to the other trivial SCC of a single interconnected FMU variable.
+As seen from the algorithm in \cref{alg:initialization}, the algebraic loops are handled using a different initialization strategy compared to the other trivial SCC of a single interconnected FMU variable.
