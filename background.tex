@@ -1,8 +1,8 @@
 \section{Background}\label{sc:background}
 In this section, we provide a formalization of FMI co-simulation and a brief background on INTO-CPS Maestro 2.
 
-\subsection{FMU definitions}
-To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation, making time of an FMU irrelevant. The formalization from Gomes et al. is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
+\subsection{FMU Definitions}
+To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_lucio_vangheluwe_2019}. The main definitions of relevance to this paper will be presented, but readers are referred to the original publications for more information. This paper is only concerned with the initialization-phase of a co-simulation, making time of an FMU irrelevant. The formalization from Gomes et al.\cite{gomes_lucio_vangheluwe_2019} is extended with new definitions regarding algebraic loops, and convergence of fixed point iteration.
 \begin{definition}[FMU]\label{def:fmu}
   An FMU with identifier $c$ is represented by the tuple   
   $$\tuple{\stateset{c}, \inputs{c}, \outputs{c}, \fset{c}, \fget{c}},$$
@@ -18,8 +18,7 @@ To describe the formalization of FMUs, we adopt the vocabulary from \cite{gomes_
   A scenario is a structure $\tuple{\fmus, \coupling}$ where each identifier $c \in \fmus$ is associated with an FMU, as defined in \cref{def:fmu}, and $\coupling(u)=y$ means that the output $y$ is connected to input $u$.
   Let $\allinputs = \bigcup_{c \in \fmus} \inputs{c}$ and $\alloutputs = \bigcup_{c \in \fmus} \outputs{c}$, then $\coupling : \allinputs \to \alloutputs$.
 \end{definition}
-Note it is possible for a single output to connect to a multiple inputs, but a single input can only rely on a single output.
-%In Defn. 2, it seems that L is a function U --> Y, does that mean that each input variable feeds-through only one output variable?
+Note a single output can connect to multiple inputs, but a single input can only rely on a single output.
 The following definitions correspond to the operations that are permitted in the initialization phase of a co-simulation.
 
 \begin{definition}[Output Computation]\label{def:getout}
@@ -29,10 +28,9 @@ The $\fget{c}(\dontcare, \outputvar{c})$ represents the calculation of output $\
 \begin{definition}[Input Computation]\label{def:setin}
 The $\fset{c}(\dontcare, \inputvar{c}, \inputV)$ represents the setting of input $\inputvar{c}$  of $c \in \fmus$. Given a co-simulation state, it checks whether all outputs connected to $\inputvar{c}$ are defined.
 \end{definition}
-%A faulty check will incur TODO
 
 \begin{definition}[Fixed Point]\label{def:fixedpoint}
-The $\fixedpoint{l}$ represents an order sequence of the setting or getting of all input and output variables of a given SCC $l$, see \cref{def:loop} for a definition of SCC.
+The $\fixedpoint{l}$ represents an ordered sequence of the setting or getting of all variables of a given SCC $l$, see \cref{def:loop} for a definition of SCC.
 The $\fixedpoint{l} \subseteq \bigcup_{c \in \fmus} \set{\fget{c},\fset{c}}$ 
 \end{definition}
 
@@ -41,11 +39,10 @@ The $\fixedpoint{l} \subseteq \bigcup_{c \in \fmus} \set{\fget{c},\fset{c}}$
   Given a scenario $\tuple{\fmus, \coupling}$, we define the initialization procedure $\sequence{\initcall_i}_{i \in \setnat}$ as is a finite ordered sequence of FMU function calls that needs to be performed in the initialization of a co-simulation scenario. The ordered sequence is defined as: $\sequence{\functioncall_i}_{i \in \setnat} = \functioncall_0, \functioncall_1, \ldots$ with
   $\functioncall_i \in \initcall_{} = \bigcup_{l \in loops} \fixedpoint{l},$
   and $i$ denoting the order of the function call.
-  loops in defined as the set of all SCC see \cref{def:loop}.
+  Loops is defined as the set of all SCC see \cref{def:loop}.
 \end{definition}
 
-It should be noted that a trivial SCC (\see \cref{def:loop}) is only a single get or set action and is not regarded as a fixed point outside \cref{def:initialization}, but just a simple computation.
-
+It should be noted that a trivial SCC (see \cref{def:loop}) is only a single get or set action and is not regarded as a fixed point outside \cref{def:initialization}, but just a simple computation.
 
 \begin{definition}[Feed-through]\label{def:feedthrough}
   The input $\inputvar{c} \in \inputs{c}$ feeds through to output $\outputvar{c} \in \outputs{c}$, that is, $(\inputvar{c},\outputvar{c}) \in \feedthrough{c}$, when there exists $v_1, v_2 \in \values$ and $\state{c} \in \stateset{c}$, such that
@@ -76,7 +73,7 @@ The interconnections of FMU variables can lead to circular dependencies between 
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/quarter_car_SCC.pdf}
-    \caption{An FMU co-simulation scenario of the Quarter car and its Initialization Graph denoted with SCCs}
+    \caption{An FMU co-simulation scenario of the Quarter car and its Initialization Graph denoted with SCCs.}
     \label{fig:fmu_cycle}
 \end{figure}
 
@@ -85,11 +82,11 @@ The definition of strongly connected components is adapted from the semantics of
 
 \begin{definition}[Algebraic loops] \label{def:loop}
 An algebraic loop is defined as a non-trivial, strongly connected component of the graph in \cref{def:initialization_graph}.
-Formally, a strong connected component satisfies $\set{a,b \in SCC: \mathit{Path}(a,b)}$, where $\mathit{Path}(a,b)$ is true when there's a path (including an empty path) between nodes $a$ and $b$ ($\mathit{Path}(a,a)$ is always true).
+Formally, a strong connected component satisfies $\set{a,b \in SCC: \mathit{Path}(a,b)}$, where $\mathit{Path}(a,b)$ is true when there's a path (including an empty path from a node to itself) between nodes $a$ and $b$ ($\mathit{Path}(a,a)$ is always true).
 An $SCC$ is non-trivial when it has more than one node.
 \end{definition}
 
-Since the edges of the graph represent dependencies between variables, the value of every variable in a non-trivial strong component depends on itself.
+Since the edges of the graph represent dependencies between the variables, the value of every variable in a non-trivial strong component depends on itself.
 Let $X$ denote a vector of one or more variables whose value depends on itself. The non-trivial strong component forms an equation with the form $F(X, U) = X$, where $F$ denotes the relations between the variables in the loop and $U$ denotes the variables whose values are calculated elsewhere. 
 This means that algebraic loops need to be handled using fixed point iterations\cite{Gomes2018}. 
 
@@ -114,10 +111,21 @@ $\exists n \in \setnat: |F(X^{n+1}, U) - F(X^{n}, U)| \leq \epsilon$.
 \end{definition}
 
 \subsection{INTO-CPS Maestro 2}
-INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}}~\cite{Thule2019b} is a framework for creating simulation specifications and executing such specifications. The framework is FMI-based and set to supersede Maestro~\cite{Maestro} with the main goal of supporting research into co-simulation based on FMI. 
+INTO-CPS Maestro 2\footnote{currently in alpha \url{https://github.com/INTO-CPS-Association/maestro/tree/2.0.0-alpha}.}~\cite{Thule2019b} is a framework for creating simulation specifications and executing such specifications. The framework is FMI-based and set to supersede Maestro~\cite{Maestro} with the main goal of supporting research into co-simulation based on FMI. 
 
 The philosophy of the framework is to separate the specification of a co-simulation from the execution. This allows one to inspect and verify, manually or automatically, how a given co-simulation is to be executed. 
 
-A specification is expressed in the domain-specific language called Maestro Base Language (MaBL), and it is explicit, such that the application of, i.e., FMUs are transparent. Expansion plugins can assist in creating such MaBL specifications, and one can apply expansion plugins that, in turn, generate the MaBL code. The plugin described in this paper is such an expansion plugin. The application of a plugin is evident in a MaBL specification. Upon processing of the specification, a new specification is created where the application of a plugin is replaced by the MaBL code generated by the plugin. This process is known as expansion, and a specification without any expansions remaining is a fully expanded MaBL specification. 
+A specification is expressed in the domain-specific language called Maestro Base Language (MaBL), and it is explicit, such that the application of, i.e., FMUs are transparent. Expansion plugins can assist in creating such MaBL specifications, and one can apply expansion plugins that, in turn, generate the MaBL code. The plugin described in this paper is such an expansion plugin. The application of a plugin is evident in a MaBL specification. Upon processing of the specification, a new specification is created where the application of a plugin is replaced by the MaBL code generated by the plugin. This process is known as expansion, and a specification without any expansions remaining is a fully expanded MaBL specification. An example of a part of the folded MaBL specification of the case study example of \cref{sec:case_study} can be seen below.
 
+\begin{lstlisting}[language=C++]
+simulation
+import Initializer;
+{
+FMI2 chassis = load("FMI2", "{8c4e810f-3df3-4a00-8276-176fa3c9f000}", "src/chassis-c.fmu");
+...
+IFmuComponent components[3]={chassis,suspension, road};
+expand initialize(components,START_TIME, END_TIME);
+...
+}
+\end{lstlisting}
 To conduct a co-simulation, Maestro2 also features an interpreter that can execute a fully expanded MaBL specification, resulting in the execution of the co-simulation.

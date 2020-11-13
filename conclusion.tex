@@ -1,4 +1,4 @@
-\section{Concluding remarks}\label{sc:summary}
+\section{Concluding Remarks}\label{sc:summary}
 This work uses a topological ordering of a dependency graph of the interconnected FMUs variable and internal FMU connections along with predicates from the FMI specification to calculate a correct initialization order for a co-simulation scenario potentially containing algebraic loops.
 The initialization procedure optimizes the initialization order by grouping variables with similar characteristics to perform the fewest possible operations in the initialization procedure.
 This approach supports the initialization of a co-simulation scenario containing algebraic loops by using fixed point iteration. 
@@ -8,4 +8,4 @@ The approach is realized as an expansion plugin for the open-source INTO-CPS Mae
 Future work includes formal verification of the plugin using the Logika framework\cite{inbook}.
 We will also look into the generation of a verification strategy for the whole Maestro 2 framework to examine how different forms of verification jointly can extend the trust of the correctness of the result of a co-simulation. 
 
-\paragraph*{\textbf{Acknowlegements.}}We would like to thank Stefan Hallerstede, Christian Møldrup Legaard, and Peter Gorm Larsen for providing valuable input to this paper and the developed plugin.
+\subsubsection*{Acknowledgements} We would like to thank Stefan Hallerstede, Christian Møldrup Legaard, and Peter Gorm Larsen for providing valuable input to this paper and the developed plugin.
