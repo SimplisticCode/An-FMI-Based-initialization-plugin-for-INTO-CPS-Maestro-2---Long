@@ -37,6 +37,8 @@
 \usepackage{filecontents}
 \usepackage{todonotes}
 \usepackage{cleveref}
+\usepackage{listings}
+\newcommand{\orcid}[1]{\href{https://orcid.org/#1}{\includegraphics[width=10pt]{images/orcid.png}}}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -45,6 +47,32 @@
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
 \input{commands}
 \input{case_study_results}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
 
 \begin{document}
 
@@ -65,9 +93,9 @@
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-\author{Simon Thrane Hansen\inst{1} \and
-Casper Thule\inst{1} \and
-Cláudio Gomes \inst{1}}
+\author{Simon Thrane Hansen\inst{1} \orcidID{0000-0002-3796-4319} \and
+Casper Thule\inst{1} \orcidID{0000-0001-6606-9236} \and
+Cláudio Gomes \inst{1} \orcidID{0000-0003-2692-9742}}
 %
 \authorrunning{S. Thrane et al.}
 % First names are abbreviated in the running head.

@@ -1,21 +1,21 @@
-\section{Case study}
+\section{Case Study}
 \label{sec:case_study}
 In this section, we give a simple example of a co-simulation whose correct initialization demands the solution to an algebraic loop.
 
 We consider a co-simulation of a quarter car model \cite[Section 6.4]{Schramm2014}, illustrated in \cref{fig:quarter_car}.
 We omit the equations that each FMU is solving but note that gravity acts on both wheel and chassis masses and that the origin of each mass is when the springs are not displaced.
-The equations and simulation model for this example are available online\footnote{\url{https://github.com/SimplisticCode/QuarterCarCaseStudy}}. 
+The equations and simulation model for this example are available online\footnote{\url{https://github.com/SimplisticCode/QuarterCarCaseStudy}.}. 
 
 \begin{figure}[htb]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/quarter_car.pdf}
+    \includegraphics[width=1\textwidth]{images/quarter_car_FMUs.pdf}
     \caption{Quarter car model co-simulation. Adapted from \cite[Section 6.4]{Schramm2014}.}
     \label{fig:quarter_car}
 \end{figure}
 
 The FMUs need initial conditions specified by equations that restrict the possible initial values for the position and velocity of the wheel and chassis masses.
-\Cref{fig:init_state_0_sim} illustrates what happens when we simply set those positions and velocities to zero.
-Note that, because of gravity, the car chassis bounces on the suspension wheel, with a maximum compression of about 17cm. This is most likely an invalid scenario, as the suspension of the car might not be rated to be displaced that much. In any case, the purpose of simulation studies involving quarter car models is to understand how well a suspension system absorbs shock when the car goes over a bump, not when the car is \emph{falls on the road}, which is what the simulation results in \cref{fig:init_state_0_sim} resemble.
+\Cref{fig:init_state_0_sim} illustrates what happens when we set those positions and velocities to zero.
+Note that, because of gravity, the car chassis bounces on the suspension wheel, with a maximum compression of about 17cm compared to when the system's springs are uncompressed. This is most likely an invalid scenario, as the car's suspension might not be rated to be displaced that much. In any case, the purpose of simulation studies involving quarter car models is to understand how well a suspension system absorbs shock when the car goes over a bump, not when the car \emph{falls on the road}, which is what the simulation results in \cref{fig:init_state_0_sim} resemble.
 
 \begin{figure}[htb]
 \centering
@@ -66,14 +66,14 @@ For the suspension FMU, the following equations are active:
 & F_R = - c_R * z_R  & \text{Rubber force acting on tire} \\
 & F_A = c_A * (z_A - z_R) + d_A * (v_A - v_r)  & \text{Suspension force acting on tire} \\
 & F_{\mathit{total}} = F_R + F_A - F_{gR} & \text{Total forces acting on tire} \\
-& a_R = (1/m_R) * F_{\mathit{total}}  & \text{Acceleration of tire}
+& a_R = (1/m_R) * F_{\mathit{total}}  & \text{Acceleration of tire}.
 \end{align}
 Finally, for the Chassis FMU, the following equations are active at the initial time:
 \begin{align}
 & a_A = 0.0 & \text{Acceleration of chassis} \\
 & v_A = 0.0 & \text{Velocity of chassis} \\
 & F_{gA} = 9.81 * m_A  & \text{Gravity on the chassis} \\
-& a_A = (1/m_A) * (- F_A - F_{gA})  & \text{Acceleration of chassis}
+& a_A = (1/m_A) * (- F_A - F_{gA})  & \text{Acceleration of chassis}.
 \end{align}
 
 To see that there is an algebraic loop, note that the output $z_A$ of the chassis FMU is not restricted directly, but instead has to be computed from the acceleration equations $a_A = 0 = (1/m_A) * (- F_A - F_{gA})$.
